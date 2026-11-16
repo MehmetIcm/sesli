@@ -1,0 +1,34 @@
+# Satır sonları: depoda LF, çıkışta işletim sistemine göre.
+* text=auto eol=lf
+
+# Metin dosyaları
+*.dart text
+*.yaml text
+*.yml text
+*.md text
+*.js text
+*.html text
+*.css text
+*.json text
+*.sh text eol=lf
+*.ps1 text eol=crlf
+
+# İkili dosyalar
+*.onnx binary
+*.wav binary
+*.mp3 binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.wasm binary
+*.bin binary
+
+# Model ve ses verisi: GitHub dil istatistiklerinde gürültü yapmasın.
+assets/models/** linguist-vendored
+assets/voices/** linguist-vendored
+assets/previews/** linguist-vendored
+assets/data/english_lexicon.json linguist-vendored
+assets/data/turkish_words.txt linguist-vendored

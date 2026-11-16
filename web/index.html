@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Sesli — tamamen çevrimdışı, doğal Türkçe metin seslendirme. Metninizi yazın, altı farklı Türkçe sesle dinleyin ve MP3 olarak indirin.">
+  <meta name="theme-color" content="#0F766E">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://mehmetricm.github.io/sesli/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Sesli">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:title" content="Sesli — Tamamen Çevrimdışı Türkçe Metin Seslendirme">
+  <meta property="og:description" content="Altı gerçek Türkçe ses, akıllı metin normalizasyonu ve gerçek MP3 çıktısı. Her şey cihazınızda çalışır; metinleriniz sunucuya gönderilmez.">
+  <meta property="og:url" content="https://mehmetricm.github.io/sesli/">
+  <meta property="og:image" content="https://mehmetricm.github.io/sesli/icons/Icon-512.png">
+  <meta property="og:image:alt" content="Sesli logo">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Sesli — Tamamen Çevrimdışı Türkçe Metin Seslendirme">
+  <meta name="twitter:description" content="Metninizi yazın, altı Türkçe sesle dinleyin, MP3 olarak indirin. Sunucu, hesap ve reklam yok.">
+  <meta name="twitter:image" content="https://mehmetricm.github.io/sesli/icons/Icon-512.png">
+
+  <link rel="privacy-policy" href="privacy.html" title="Gizlilik ve Çerez Politikası">
+  <link rel="terms-of-service" href="terms.html" title="Kullanım Koşulları">
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Sesli">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="manifest" href="manifest.json">
+
+  <title>Sesli — Türkçe Metin Seslendirme</title>
+
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; background: #F6F7F4; }
+    #sesli-boot {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 18px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #16302C; background: #F6F7F4;
+    }
+    #sesli-boot .mark {
+      width: 76px; height: 76px; border-radius: 20px; background: #0F766E;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 12px 30px rgba(15, 118, 110, .22);
+    }
+    #sesli-boot .bars { display: flex; align-items: flex-end; gap: 5px; height: 34px; }
+    #sesli-boot .bars i { display: block; width: 7px; border-radius: 4px; background: #F6F7F4; }
+    #sesli-boot .bars i:nth-child(1) { height: 14px; }
+    #sesli-boot .bars i:nth-child(2) { height: 28px; background: #E9C46A; }
+    #sesli-boot .bars i:nth-child(3) { height: 20px; }
+    #sesli-boot .bars i:nth-child(4) { height: 32px; background: #E9C46A; }
+    #sesli-boot .bars i:nth-child(5) { height: 12px; }
+    #sesli-boot h1 { font-size: 22px; margin: 0; letter-spacing: -0.4px; }
+    #sesli-boot p { margin: 0; font-size: 13px; color: #5B6B67; }
+    @media (prefers-color-scheme: dark) {
+      html, body, #sesli-boot { background: #0D1514; color: #E8EFED; }
+      #sesli-boot p { color: #9AA9A5; }
+    }
+  </style>
+</head>
+<body>
+  <div id="sesli-boot">
+    <div class="mark"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div></div>
+    <h1>Sesli</h1>
+    <p>Metniniz, doğal Türkçe sesle.</p>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function (error) {
+          console.warn('Çevrimdışı önbellek kaydedilemedi:', error);
+        });
+      });
+    }
+
+    window.addEventListener('flutter-first-frame', function () {
+      var boot = document.getElementById('sesli-boot');
+      if (!boot) return;
+      boot.style.transition = 'opacity 220ms ease';
+      boot.style.opacity = '0';
+      window.setTimeout(function () {
+        if (boot.parentNode) boot.parentNode.removeChild(boot);
+      }, 260);
+    });
+  </script>
+
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

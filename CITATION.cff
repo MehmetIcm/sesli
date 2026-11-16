@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "Sesli'yi akademik veya ticari bir çalışmada kullanıyorsanız bu kaydı atıf olarak kullanabilirsiniz."
+title: "Sesli — Tamamen Çevrimdışı Türkçe Metin Seslendirme"
+abstract: >-
+  Sesli, tarayıcıda (WebAssembly) ve macOS'ta tamamen cihaz üzerinde çalışan
+  Türkçe metin seslendirme uygulamasıdır. Pocket TTS Türkçe modelini kullanır;
+  metinler hiçbir sunucuya gönderilmez. Uygulama kodu MIT, model ağırlıkları
+  CC-BY-4.0 lisanslıdır.
+authors:
+  - family-names: ICME
+    given-names: Mehmet
+type: software
+license: MIT
+version: 1.0.0
+date-released: 2026-11-16
+repository-code: "https://github.com/MehmetIcm/sesli"
+url: "https://mehmetricm.github.io/sesli/"
+keywords:
+  - text-to-speech
+  - turkish
+  - offline
+  - onnx
+  - flutter
+  - privacy

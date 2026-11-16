@@ -1,0 +1,59 @@
+name: Hata bildirimi
+description: Seslendirme, oynatma, MP3 veya arayüz hatası
+title: "[Hata]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Teşekkürler! Lütfen güvenlik açıkları için **issue açmayın**;
+        [SECURITY.md](https://github.com/MehmetIcm/sesli/blob/main/SECURITY.md)
+        yolunu izleyin.
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - Web — Chrome
+        - Web — Edge
+        - Web — Safari
+        - Web — Firefox
+        - macOS
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Sesli sürümü
+      placeholder: "1.0.0 (Hakkında ekranında yazar)"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Yeniden üretme adımları
+      placeholder: |
+        1. “...” metnini yazın
+        2. Elif sesini seçin
+        3. Seslendir'e basın
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Beklenen davranış
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Gerçekleşen davranış
+      description: Konsol çıktısı veya hata mesajı varsa ekleyin.
+    validations:
+      required: true
+  - type: textarea
+    id: text
+    attributes:
+      label: Kullanılan metin (varsa)
+      description: Sesletim hatasıysa metni ve beklenen okunuşu yazın.
+      render: text

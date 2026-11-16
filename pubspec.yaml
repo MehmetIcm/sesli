@@ -1,0 +1,55 @@
+name: turkce_ses
+description: "Sesli — tamamen çevrimdışı, doğal Türkçe metin seslendirme uygulaması."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  sherpa_onnx: ^2.0.1
+  audioplayers: ^6.5.1
+  provider: ^6.1.5
+  shared_preferences: ^2.5.6
+  path_provider: ^2.1.5
+  file_selector: ^1.0.4
+  shine_dart: ^0.1.1
+  web: ^1.1.2
+  path: ^1.9.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/data/
+    - assets/images/
+    - assets/voices/
+    - assets/previews/
+    - assets/models/pocket_tts_tr/
+
+  fonts:
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope.ttf
+
+flutter_launcher_icons:
+  image_path: assets/images/app_icon.png
+  macos:
+    generate: true
+    image_path: assets/images/app_icon.png
+  web:
+    generate: true
+    image_path: assets/images/app_icon.png
+    background_color: "#0B1F1C"
+    theme_color: "#0F766E"

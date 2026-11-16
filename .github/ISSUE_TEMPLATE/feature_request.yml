@@ -1,0 +1,36 @@
+name: Özellik önerisi
+description: Yeni bir yetenek veya iyileştirme önerin
+title: "[Öneri]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Önerilerde projenin iki temel kuralını göz önünde bulundurun:
+        **tamamen çevrimdışı** ve **izin verici lisanslar** (NC/kapalı
+        kaynak bileşen yok).
+  - type: textarea
+    id: problem
+    attributes:
+      label: Hangi sorunu çözüyor?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Önerilen çözüm
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Değerlendirilen alternatifler
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Kısıtlar
+      options:
+        - label: Çözüm çevrimdışı çalışabilir (ağ isteği, CDN veya bulut yok).
+          required: true
+        - label: Kullanılacak bileşenler izin verici lisanslıdır.
+          required: true

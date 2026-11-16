@@ -1,0 +1,36 @@
+{
+    "name": "Sesli — Türkçe Metin Seslendirme",
+    "short_name": "Sesli",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0B1F1C",
+    "theme_color": "#0F766E",
+    "description": "Tamamen çevrimdışı, doğal Türkçe metin seslendirme. Metninizi yazın, altı farklı Türkçe sesle dinleyin ve MP3 olarak indirin.",
+    "lang": "tr",
+    "orientation": "any",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
