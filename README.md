@@ -35,6 +35,9 @@ Seslendirme, uygulamayla birlikte gelen ONNX modeliyle cihaz üzerinde
 | `flutter analyze` | Temiz (0 sorun) |
 | `flutter test` | 162 test geçiyor |
 | Web release derlemesi | Başarılı (`build/web`, ~201 MB) |
+| GitHub deposu | Herkese açık: https://github.com/MehmetIcm/sesli |
+| GitHub Pages yayını | Yayında ve doğrulandı: https://mehmeticm.github.io/sesli/ |
+| Sürüm | v1.0.0 (GitHub Release + etiket) |
 | Chrome'da gerçek seslendirme | Doğrulandı (Elif, Emre ve Teknik örnek metni; 17,6 sn'de 20,9 sn ses) |
 | Oynatma biçimi | Doğrulandı (`data:audio/wav`, 48 kHz, mono, 16-bit, 20,9 sn) |
 | Oynat / duraklat / devam / sarma | Doğrulandı (tarayıcıda gerçek tıklamalarla) |

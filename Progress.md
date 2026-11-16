@@ -493,3 +493,90 @@ tamamladı. Bilet 1.250,75 TL, indirim %25. Telefon: 0555 123 45 67. Aralık
   metin ve tek tohumla alındı.
 - İsteğe bağlı: “Cambridge” için kullanıcının belirttiği birebir
   “Kembiriç” yazımı istenirse `cambridge` haritası tek satırda değişir.
+
+## 12. GitHub yayını ve hukuki tamamlama (16 Kasım 2026)
+
+Uygulama herkese açık depoya yüklendi, GitHub Actions ile GitHub Pages'e
+dağıtıldı ve canlı adreste uçtan uca doğrulandı.
+
+### Yayın bilgileri
+
+| Alan | Değer |
+| --- | --- |
+| Depo | https://github.com/MehmetIcm/sesli (public) |
+| Canlı site | https://mehmeticm.github.io/sesli/ |
+| Dağıtım | `.github/workflows/web.yml` — verify → build → deploy |
+| Tetikleyici | `main` dalına push, PR (yalnız verify + build), elle çalıştırma |
+| Sürüm etiketi | `v1.0.0` — https://github.com/MehmetIcm/sesli/releases/tag/v1.0.0 |
+| İlk commit | `8086a38` — 162 dosya, 47.276 satır |
+| Pages düzeltmesi | `4cd3379` — yanlış “mehmetricm” yazımı “mehmeticm” olarak düzeltildi |
+
+Derleme `--base-href "/sesli/"` ve `--no-web-resources-cdn` ile yapılır;
+`web/privacy.html`, `web/terms.html`, `web/robots.txt` ve `web/sitemap.xml`
+`build/web` içine kopyalanır, `.nojekyll` eklenir. Böylece uygulama alt
+yolda, service worker kapsamı `/sesli/` olacak şekilde çalışır.
+
+### Eklenen hukuki ve topluluk dosyaları
+
+- `LICENSE` — MIT (telif: Mehmet ICME); üçüncü taraf bileşenlerin ayrı
+  lisanslı olduğu notuyla.
+- `PRIVACY.md` — GDPR/KVKK uyumlu gizlilik, çerez ve yerel depolama
+  politikası; GitHub Pages erişim günlükleri ve hukuki dayanak açıklaması.
+- `TERMS.md` — kullanım koşulları, “olduğu gibi” sunum, sorumluluk sınırı,
+  kabul edilebilir kullanım, çıktıların mülkiyeti.
+- `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`,
+  `CHANGELOG.md`, `CITATION.cff`.
+- `THIRD_PARTY_NOTICES.md` ve `LICENSES.md` — CC-BY-4.0 model atfı,
+  Apache-2.0 normalizör bildirimi ve özet tablo.
+- `licenses/` — Apache-2.0, LGPL-2.0, CC-BY-4.0, Flutter BSD-3-Clause,
+  Manrope OFL-1.1 ve CMUdict BSD-2-Clause tam metinleri.
+- `web/privacy.html`, `web/terms.html` — uygulamadan bağımsız, statik ve
+  çerez kullanmayan hukuki sayfalar; `robots.txt` ve `sitemap.xml` ile
+  birlikte yayınlanır.
+- `.github/ISSUE_TEMPLATE/` ve `PULL_REQUEST_TEMPLATE.md` — hata/öneri
+  şablonları, güvenlik açığı için özel kanal yönlendirmesi.
+- `web/index.html` — canonical, Open Graph/Twitter kartları,
+  `rel=privacy-policy` ve `rel=terms-of-service` bağlantıları.
+- Uygulama içi: **Hakkında** ekranında depo bağlantısı, **Gizlilik**
+  ekranında barındırma günlükleri kartı, **Lisanslar** ekranında MIT
+  uygulama kodu kaydı.
+
+**Çerez bandı neden yok:** Uygulama `document.cookie` yazmaz; yalnızca
+çalışması için zorunlu yerel depolama ve service worker önbelleği kullanır.
+Bu, GDPR md. 5(3) / ePrivacy kapsamında “kesinlikle gerekli” olduğundan
+onay bandı gerekmez; durum politikada ve uygulama içinde açıklanır.
+
+### Canlı yayın doğrulaması
+
+- `https://mehmeticm.github.io/sesli/`, `/privacy.html`, `/terms.html` →
+  HTTP 200; `<base href="/sesli/">`; service worker kapsamı
+  `https://mehmeticm.github.io/sesli/sw.js`.
+- Model dosyaları canlı adresten yüklendi (`lm_main.int8.onnx` ~6,2 sn);
+  WASM motoru ve tüm ONNX dosyaları 200 döndü.
+- “Teknik” örnek metniyle gerçek seslendirme yapıldı; üretilen kaynak
+  `data:audio/wav`, başlıktan okunan değerler **48 kHz, mono, 16-bit,
+  15,785 sn, 1,45 MB**. Ses sonuna kadar oynatıldı; oynatıcıda
+  “Elif · Nötr · 0:15 · 308 KB” göründü.
+- Konsolda hata veya uyarı yok.
+- GitHub Actions çalışması `success`; `v1.0.0` sürümü yayınlandı.
+
+### Bant genişliği
+
+GitHub Pages'in aylık ~100 GB yumuşak sınırı vardır. Her yeni ziyaretçi
+model (~143 MB) dahil yaklaşık 150 MB indirir; bu yaklaşık **ayda 600 yeni
+ziyarete** karşılık gelir. Trafik artarsa model ayrı bir Release varlığına
+veya CDN'e taşınmalıdır (uygulama yine çevrimdışı kalır).
+
+### Kullanıcının yapması gerekenler
+
+- **macOS DMG:** Bu makinede tam Xcode ve CocoaPods yok. Kurulumdan sonra
+  `flutter build macos --release` çalıştırılmalı; imzalama/notarization
+  için Apple Developer hesabı gerekir.
+- **Safari/Firefox:** Yalnızca Chromium test edildi; bu tarayıcılarda
+  çalışma zamanı testi yapılmalı.
+- **Özel alan adı (isteğe bağlı):** GitHub Pages ayarlarından CNAME
+  eklenebilir; `sitemap.xml`, `robots.txt`, canonical/OG etiketleri ve
+  `AppInfo` adresleri buna göre güncellenmelidir.
+- **Kimlik bilgisi:** Lisans ve künyede “Mehmet ICME” kullanıldı; gerçek
+  ad/e-posta farklıysa `LICENSE`, `CITATION.cff` ve `pubspec.yaml`
+  güncellenmelidir.
