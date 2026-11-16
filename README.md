@@ -7,7 +7,7 @@
 [![Model: CC-BY-4.0](https://img.shields.io/badge/model-CC--BY--4.0-E9C46A.svg)](THIRD_PARTY_NOTICES.md)
 [![Flutter 3.47](https://img.shields.io/badge/Flutter-3.47-02569B.svg)](https://flutter.dev)
 
-**Canlı demo:** https://mehmetricm.github.io/sesli/
+**Canlı demo:** https://mehmeticm.github.io/sesli/
 
 Sesli, tamamen çevrimdışı çalışan bir Türkçe metin seslendirme uygulamasıdır.
 Metni yazarsınız, altı farklı Türkçe konuşmacıdan biriyle dinlersiniz ve
@@ -82,7 +82,7 @@ Depo, `.github/workflows/web.yml` ile **GitHub Pages**'e otomatik dağıtılır.
 derlemesi ve dağıtım adımlarını çalıştırır.
 
 - Alt yol desteği: derleme `--base-href "/sesli/"` ile alınır; uygulama
-  `https://mehmetricm.github.io/sesli/` altında sorunsuz çalışır.
+  `https://mehmeticm.github.io/sesli/` altında sorunsuz çalışır.
 - Service worker yalnızca güvenli bağlamlarda çalışır; GitHub Pages HTTPS
   sunduğu için sorun yoktur.
 - `.wasm` dosyaları `application/wasm` olarak sunulur.
@@ -250,8 +250,8 @@ kullanılmamıştır.
   kabul edilebilir kullanım.
 - [Güvenlik Politikası](SECURITY.md) · [Katkı Rehberi](CONTRIBUTING.md) ·
   [Davranış Kuralları](CODE_OF_CONDUCT.md)
-- Web'de ayrıca: [`/privacy.html`](https://mehmetricm.github.io/sesli/privacy.html)
-  ve [`/terms.html`](https://mehmetricm.github.io/sesli/terms.html).
+- Web'de ayrıca: [`/privacy.html`](https://mehmeticm.github.io/sesli/privacy.html)
+  ve [`/terms.html`](https://mehmeticm.github.io/sesli/terms.html).
 
 Uygulama hiçbir çerez, analitik, reklam veya üçüncü taraf isteği
 kullanmadığı için çerez onay bandı gerekmez; bu durum politikada ve

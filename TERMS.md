@@ -3,7 +3,7 @@
 **Son güncelleme:** 16 Kasım 2026
 **Geçerli sürüm:** Sesli 1.0.0 (web ve macOS)
 
-Bu koşullar, Sesli uygulamasını (`https://mehmetricm.github.io/sesli/`,
+Bu koşullar, Sesli uygulamasını (`https://mehmeticm.github.io/sesli/`,
 macOS sürümü ve kaynak kodu) kullanımınızı düzenler. Uygulamayı kullanarak
 bu koşulları kabul etmiş sayılırsınız.
 

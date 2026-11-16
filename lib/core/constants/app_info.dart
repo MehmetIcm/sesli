@@ -12,15 +12,15 @@ class AppInfo {
   static const String repositoryUrl = 'https://github.com/MehmetIcm/sesli';
 
   /// Web sürümünün yayın adresi.
-  static const String webAppUrl = 'https://mehmetricm.github.io/sesli/';
+  static const String webAppUrl = 'https://mehmeticm.github.io/sesli/';
 
   /// Gizlilik ve çerez politikasının web adresi.
   static const String privacyPolicyUrl =
-      'https://mehmetricm.github.io/sesli/privacy.html';
+      'https://mehmeticm.github.io/sesli/privacy.html';
 
   /// Kullanım koşullarının web adresi.
   static const String termsUrl =
-      'https://mehmetricm.github.io/sesli/terms.html';
+      'https://mehmeticm.github.io/sesli/terms.html';
 
   static const String privacySummary =
       'Yazdığınız metinler cihazınızdan dışarı çıkmaz. Sunucu, bulut, '

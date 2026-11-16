@@ -14,7 +14,7 @@ license: MIT
 version: 1.0.0
 date-released: 2026-11-16
 repository-code: "https://github.com/MehmetIcm/sesli"
-url: "https://mehmetricm.github.io/sesli/"
+url: "https://mehmeticm.github.io/sesli/"
 keywords:
   - text-to-speech
   - turkish

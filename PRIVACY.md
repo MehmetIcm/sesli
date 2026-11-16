@@ -5,7 +5,7 @@
 **Veri sorumlusu:** Mehmet ICME (bireysel geliştirici) — iletişim:
 [GitHub üzerinden](https://github.com/MehmetIcm/sesli/issues)
 
-Bu politika; Sesli web uygulaması (`https://mehmetricm.github.io/sesli/`
+Bu politika; Sesli web uygulaması (`https://mehmeticm.github.io/sesli/`
 adresindeki GitHub Pages yayını) ve macOS uygulaması için geçerlidir.
 
 > Kısa özet: **Metinleriniz cihazınızdan çıkmaz.** Hesap, çerez, reklam,
