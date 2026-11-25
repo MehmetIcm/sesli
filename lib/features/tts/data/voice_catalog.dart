@@ -76,41 +76,20 @@ class VoiceCatalog {
 
   /// Ses bazlı EQ profilleri.
   ///
-  /// Değerler, altı sesin ölçülen spektrumlarına göre seçilmiş başlangıç
-  /// değerleridir; global EQ'nun üzerine uygulanır. `female_1` zaten parlak
-  /// olduğu için varlık bölgesi hafifçe kısılır ve de-esser devreye girer.
+  /// Değerler, altı sesin ham çıktısı ile referans kayıtlarının spektral
+  /// dengesi karşılaştırılarak seçildi. Düzeltmeler bilinçli olarak küçük
+  /// tutulur; büyük EQ eğrileri sesi doğal tınısından uzaklaştırıyordu.
   static const Map<String, VoiceEqProfile> _eqProfiles = {
-    'female_1': VoiceEqProfile(presenceDb: -1.0, deEsser: 1.0),
-    'female_2': VoiceEqProfile(
-      lowShelfDb: -1.0,
-      presenceDb: 2.0,
-      airDb: 1.0,
-      deEsser: 0.35,
-    ),
-    'female_3': VoiceEqProfile(
-      lowShelfDb: -2.0,
-      presenceDb: 3.0,
-      airDb: 2.0,
-      deEsser: 0.35,
-    ),
-    'male_1': VoiceEqProfile(
-      lowShelfDb: -2.0,
-      presenceDb: 3.0,
-      airDb: 2.0,
-      deEsser: 0.2,
-    ),
+    'female_1': VoiceEqProfile(presenceDb: -1.5),
+    'female_2': VoiceEqProfile(lowShelfDb: -0.8, deEsser: 0.25),
+    'female_3': VoiceEqProfile(lowShelfDb: -2.5, presenceDb: -1.0),
+    'male_1': VoiceEqProfile(presenceDb: -1.5, airDb: -1.0),
     'male_2': VoiceEqProfile(
-      lowShelfDb: -4.0,
-      presenceDb: 4.0,
-      airDb: 2.0,
-      deEsser: 0.2,
-    ),
-    'male_3': VoiceEqProfile(
       lowShelfDb: -2.0,
       presenceDb: 3.0,
-      airDb: 2.0,
-      deEsser: 0.2,
+      airDb: 1.0,
     ),
+    'male_3': VoiceEqProfile(lowShelfDb: -2.5, presenceDb: -1.0),
   };
 
   static VoiceProfile byId(String? id) {

@@ -26,6 +26,20 @@ double rms(Float32List samples) {
   return math.sqrt(sum / samples.length);
 }
 
+/// Belirli bir frekanstaki sinüsün genliğini (tepe değeri) döndürür.
+double toneAmplitude(Float32List samples, double frequency, int sampleRate) {
+  var real = 0.0;
+  var imaginary = 0.0;
+  for (var i = 0; i < samples.length; i++) {
+    final phase = 2 * math.pi * frequency * i / sampleRate;
+    real += samples[i] * math.cos(phase);
+    imaginary -= samples[i] * math.sin(phase);
+  }
+  return 2 * math.sqrt(real * real + imaginary * imaginary) / samples.length;
+}
+
+double toDb(double ratio) => 20 * math.log(ratio) / math.ln10;
+
 void main() {
   group('AudioResampler', () {
     test('boş girdiyi reddeder', () {
@@ -84,6 +98,39 @@ void main() {
       final seconds = output.length / 44100;
       final measured = crossings / 2 / seconds;
       expect(measured, closeTo(frequency, frequency * 0.03));
+    });
+
+    test('6–10 kHz bölgesini düz korur', () {
+      for (final frequency in [6000.0, 8000.0, 10000.0]) {
+        final input = sine(
+          sampleRate: 24000,
+          seconds: 1,
+          frequency: frequency,
+        );
+        final output = AudioResampler.resample(input, 24000, 48000);
+        final middle = output.sublist(2400, output.length - 2400);
+        final amplitude = toneAmplitude(middle, frequency, 48000);
+        final gainDb = toDb(amplitude / 0.5);
+        expect(
+          gainDb,
+          greaterThan(-1.0),
+          reason: '$frequency Hz beklenenden fazla zayıfladı ($gainDb dB)',
+        );
+      }
+    });
+
+    test('yukarı örneklemede görüntüleri bastırır', () {
+      const frequency = 6000.0;
+      final input = sine(
+        sampleRate: 24000,
+        seconds: 1,
+        frequency: frequency,
+      );
+      final output = AudioResampler.resample(input, 24000, 48000);
+      final middle = output.sublist(2400, output.length - 2400);
+      final pass = toneAmplitude(middle, frequency, 48000);
+      final image = toneAmplitude(middle, 24000 - frequency, 48000);
+      expect(toDb(image / pass), lessThan(-40));
     });
   });
 }

@@ -12,12 +12,12 @@ bileşeni yoktur.
 
 | Bileşen | Sürüm | Lisans | Kullanım | Kaynak |
 | --- | --- | --- | --- | --- |
-| Pocket TTS Türkçe (model ağırlıkları) | 1.0 (INT8 ONNX) | **CC-BY-4.0** | Türkçe ses sentezi | `wite-tech/pocket-tts-turkish` |
+| Pocket TTS Türkçe (model ağırlıkları) | 1.1 (INT8 LM + fp32 decoder) | **CC-BY-4.0** | Türkçe ses sentezi | `wite-tech/pocket-tts-turkish` |
 | Pocket TTS ONNX dışa aktarıcı | — | **MIT** | Modelin ONNX'e aktarımı | `lomotron/pocket-tts-onnx-export` |
 | pocket-tts-turkish metin normalizörü | — | **Apache-2.0** | Türkçe normalizasyon kuralları (telefon, kesir, aralık, Romen rakamı) | `wite-tech/pocket-tts-turkish` |
 | CMU Pronouncing Dictionary | 0.7b | **BSD-2-Clause** | İngilizce kelimelerin çevrimdışı sesletim sözlüğü | `cmusphinx/cmudict` |
 | FrequencyWords Türkçe listesi | — | **MIT** | Türkçe kelime koruma listesi | `hermitdave/FrequencyWords` |
-| Sesli uygulama kodu | 1.0.0 | **MIT** | Uygulama | [LICENSE](LICENSE) |
+| Sesli uygulama kodu | 1.1.0 | **MIT** | Uygulama | [LICENSE](LICENSE) |
 
 Tam lisans metinleri [`licenses/`](licenses/) klasöründe, atıf metinleri
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) dosyasındadır. Uygulama

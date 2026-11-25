@@ -74,6 +74,22 @@
   </div>
 
   <script>
+    // Gizlilik: tüm yazı tipleri uygulamayla birlikte gelir. Flutter, pakette
+    // olmayan bir glif için fonts.gstatic.com'dan font indirmeye çalışabilir;
+    // bu üçüncü taraf isteği tarayıcı düzeyinde engelle.
+    (function () {
+      var originalFetch = window.fetch;
+      if (!originalFetch) return;
+      window.fetch = function (input, init) {
+        var url = typeof input === 'string' ? input : (input && input.url) || '';
+        if (url.indexOf('fonts.gstatic.com') !== -1 ||
+            url.indexOf('fonts.googleapis.com') !== -1) {
+          return Promise.reject(new TypeError('Üçüncü taraf font isteği engellendi'));
+        }
+        return originalFetch.call(this, input, init);
+      };
+    })();
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
         navigator.serviceWorker.register('sw.js').catch(function (error) {

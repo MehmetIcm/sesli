@@ -100,19 +100,23 @@ class TextChunker {
   }
 
   /// Bir cümlenin ardından verilecek doğal nefes payı (ms).
+  ///
+  /// Resmî `pocket-tts-turkish` paketi cümleler arasına 150 ms koyar;
+  /// uygulama, okuma metni olduğu için biraz daha geniş ama eskisinden
+  /// belirgin biçimde kısa bir pay kullanır.
   static int pauseAfter(String text) {
     final value = text.trimRight();
-    if (value.isEmpty) return 320;
-    if (value.endsWith('...') || value.endsWith('…')) return 600;
-    if (value.endsWith('?')) return 430;
-    if (value.endsWith('!')) return 390;
-    if (value.endsWith('.')) return 360;
-    if (value.endsWith(':')) return 280;
-    if (value.endsWith(';')) return 230;
+    if (value.isEmpty) return 280;
+    if (value.endsWith('...') || value.endsWith('…')) return 520;
+    if (value.endsWith('?')) return 360;
+    if (value.endsWith('!')) return 340;
+    if (value.endsWith('.')) return 300;
+    if (value.endsWith(':')) return 250;
+    if (value.endsWith(';')) return 200;
     if (value.endsWith(',') || value.endsWith('—') || value.endsWith('–')) {
-      return 160;
+      return 130;
     }
-    return 320;
+    return 280;
   }
 
   static List<String> _splitLong(String sentence, int maxChars) {

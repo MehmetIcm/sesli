@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../data/history_store.dart';
+import '../data/pocket_tts_params.dart';
 import '../data/sample_texts.dart';
 import '../data/tts_preferences.dart';
 import '../data/voice_catalog.dart';
@@ -327,7 +328,7 @@ class TtsController extends ChangeNotifier {
           final isLastParagraph = p == normalizedParagraphs.length - 1;
           segments.add(
             isLastOfParagraph && !isLastParagraph
-                ? paragraphSegments[s].copyWith(pauseAfterMs: 600)
+                ? paragraphSegments[s].copyWith(pauseAfterMs: 480)
                 : paragraphSegments[s],
           );
         }
@@ -357,6 +358,7 @@ class TtsController extends ChangeNotifier {
             numSteps: numSteps,
             normalizedText: normalized,
             voiceId: voice.id,
+            seed: PocketTtsParams.seedForSegment(index),
           ),
           onProgress: (progress) {
             _synthesisProgress =
@@ -400,8 +402,9 @@ class TtsController extends ChangeNotifier {
         sampleRate: sampleRate,
       );
 
-      // 3. Netlik: rumble/DC temizliği, global + ses bazlı EQ, de-esser,
-      //    yumuşak kompresör ve −20 LUFS / −1,5 dBTP normalizasyonu.
+      // 3. Netlik: yalnızca rumble/DC temizliği, ölçülü global ve ses bazlı
+      //    düzeltmeler; kompresör varsayılan olarak kapalı. Amaç sesi
+      //    yeniden şekillendirmek değil, doğal tınısını korumak.
       combined = AudioPostProcessor.enhance(
         combined,
         sampleRate: sampleRate,

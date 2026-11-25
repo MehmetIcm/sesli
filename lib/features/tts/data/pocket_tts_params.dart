@@ -14,11 +14,21 @@ class PocketTtsParams {
   /// Varsayılan en yüksek kaliteye ayarlıdır; kullanıcı düşürebilir.
   static const int defaultNumSteps = 8;
 
-  /// Örnekleme sıcaklığı. Düşük değer daha kararlı/temiz ses verir.
+  /// Örnekleme sıcaklığı. Modelin kendi varsayılanı 0,3'tür; 0,45 daha
+  /// canlı bir ezgi verirken kararlılığı korur.
   static const double temperature = 0.45;
 
-  /// Sabit tohum: aynı metin aynı sesle tekrarlanabilir üretilir.
+  /// Taban tohum. Aynı metin aynı sesle tekrar üretilebilir kalır.
   static const int seed = 42;
+
+  /// Her cümle için tohuma eklenen asal adım.
+  ///
+  /// Sabit tohum, her cümlenin aynı gürültü dizisiyle üretilmesine ve
+  /// ezgilerin birbirine benzemesine yol açıyordu. Cümle başına farklı ama
+  /// yine belirlenebilir bir tohum kullanılır.
+  static const int seedStride = 104729;
+
+  static int seedForSegment(int index) => seed + index * seedStride;
 
   /// Kısa cümlelerin birleştirilmesi için alt sınır. Düşük değer, modelin
   /// cümle sonu duraklamalarını korumasını sağlar.
@@ -35,5 +45,11 @@ class PocketTtsParams {
     'max_reference_audio_len': 5,
     'min_char_in_sentence': minCharsInSentence,
     'max_char_in_sentence': maxCharsInSentence,
+  };
+
+  /// [extra] haritasının belirli bir tohumla kopyası.
+  static Map<String, Object> extraForSeed(int value) => {
+    ...extra,
+    'seed': value,
   };
 }

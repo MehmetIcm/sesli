@@ -294,10 +294,11 @@ seçmek; maliyet 2×.
 
 ### 5.6 INT8 / FP32
 
-Model INT8. INT8 quantizasyon özellikle flow/decoder’da artefakt
-üretebilir. Web için 143 MB INT8 pratik; masaüstünde FP32/FP16 denemesi
-kaliteyi artırabilir ama boyut 3–4× artar. Bu, “yüksek kalite” modu
-olarak ayrı ele alınmalı; varsayılan web dağıtımı için uygun değil.
+Model başlangıçta tamamen INT8 idi. INT8 quantizasyon özellikle
+flow/decoder’da artefakt üretebilir. 1.1.0'da dil modeli INT8 kalırken
+Mimi kod çözücüsü fp32'ye alındı; paket 143 MB'tan 157 MB'a çıktı ve
+kuantizasyon gürültüsü belirgin şekilde azaldı. Ayrıntılar için
+[bölüm 7](#7-110-doğallık-turu-25-kasım-2026).
 
 ---
 
@@ -748,3 +749,84 @@ flutter test
 | Low −2, presence +3, high +2 | %14,3 | %55,3 | %15,4 |
 | Low −3, presence +4, high +3 | %14,4 | %53,5 | %18,6 |
 | Parlak İngilizce referans | %79,1 | %0,8 | %0,3 |
+
+---
+
+## 7. 1.1.0 doğallık turu (25 Kasım 2026)
+
+Bu bölüm, önceki ölçümlerden sonra yapılan düzeltmeleri ve güncel model
+karşılaştırmasını kaydeder.
+
+### 7.1 Yeniden örnekleyici hatası
+
+24 kHz → 48 kHz dönüşümünde kesim frekansı Nyquist'in %47'sindeydi
+(5,6 kHz). Ölçülen zayıflama: 6 kHz −14 dB, 8 kHz −38 dB, 10 kHz −73 dB.
+Bu, “boğuk/tizsiz” algısının ana nedeniydi. Yeni ayar: kesim %94, 32 tap,
+Kaiser β 8,6. 6–10 kHz −1 dB içinde; görüntüler −40 dB altında. Regresyon
+testleri `test/features/tts/infrastructure/audio_resampler_test.dart`
+içinde.
+
+### 7.2 Yeni DSP profili
+
+`DspProfile.natural`:
+
+| Aşama | Ayar |
+| --- | --- |
+| High-pass | 60 Hz |
+| Low shelf | 220 Hz, −1,5 dB |
+| Gövde | 550 Hz, +0,8 dB, Q 0,9 |
+| Varlık | 2,8 kHz, +0,8 dB, Q 0,9 |
+| Hava | kapalı |
+| De-esser | 0,6 ölçek |
+| Kompresör | kapalı |
+| Hedef | −18 LUFS / −1,5 dBTP |
+
+Eski profil (250 Hz −4 dB, 3,4 kHz +5 dB, 6,5 kHz +3,5 dB, kompresör,
+−20 LUFS) sertlik ve boğukluk üretiyordu; A/B için `DspProfile.legacy`
+olarak korundu.
+
+### 7.3 SQUIM_OBJECTIVE PESQ
+
+| Ses | Legacy | Natural |
+| --- | ---: | ---: |
+| Elif | 3,416 | **3,609** |
+| Zeynep | 3,100 | **3,238** |
+| Defne | 3,083 | **3,226** |
+| Emre | 2,010 | **2,437** |
+| Kerem | 2,307 | **2,353** |
+| Mert | 2,190 | **2,422** |
+
+### 7.4 Alternatif modeller (UTMOS22)
+
+| Model | Lisans | Boyut | Ses | UTMOS |
+| --- | --- | ---: | ---: | --- |
+| Pocket TTS | CC-BY-4.0 | 157 MB | 6 | 2,82–3,90 |
+| Canora int8 | Apache-2.0 | 115 MB | 2 | 3,50–3,57 |
+| Canora fp16 | Apache-2.0 | 163 MB | 2 | 3,80–3,90 |
+| Canora fp32 | Apache-2.0 | 325 MB | 2 | 4,04–4,24 (beyan) |
+| Clarvia tiny | Apache-2.0 | 20 MB | 10 | 2,90–3,01 |
+| Piper dfki | CC-BY-4.0 | 63 MB | 1 | 3,71 |
+
+Web için makul boyutta kalan izin verici modeller arasında Pocket TTS'in
+en iyi kadın sesi hâlâ en yüksek doğallıkta. Canora fp16 aynı seviyeye
+ulaşıyor ama 2 sesli ve fp16'nın web CPU/WASM desteği güvenilir değil.
+
+### 7.5 Referans kalitesi
+
+Pocket TTS ses klonlama kullandığı için çıktı, referans kaydın kalitesini
+izliyor:
+
+| Referans | Referans UTMOS | Pocket çıktısı UTMOS |
+| --- | ---: | ---: |
+| female_1 (mevcut) | 4,32 | 3,90 |
+| Canora elif | 4,14 | 3,70 |
+| Canora emre | 3,81 | 3,62 |
+| Clarvia male_2 | 3,46 | 2,98 |
+| male_1 (mevcut) | 1,84 | 2,93 |
+
+Erkek seslerindeki düşük doğallık, büyük ölçüde referans kayıtlarının
+kalitesinden kaynaklanıyor. Canora `emre` referansı Emre'yi 2,93 → 3,62'ye
+çıkarıyor. Ancak bu, Canora'nın tasarlanmış tek erkek tınısını kullanır;
+üç ayrı erkek sesi için yeterli değildir. Model değiştirmeden uygulanacak
+en ucuz iyileştirme budur; yine de ses kimliği ve lisans atfı açısından
+ayrıca değerlendirilmelidir.

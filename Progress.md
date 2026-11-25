@@ -3,7 +3,7 @@
 Sesli — tamamen çevrimdışı Türkçe metin seslendirme uygulaması.
 Bu dosya, yapılan işi ve doğrulama sonuçlarını dürüstçe kaydeder.
 
-Son güncelleme: 15 Kasım 2026
+Son güncelleme: 25 Kasım 2026
 
 ## 1. Kapsam ve hedefler
 
@@ -26,10 +26,10 @@ Son güncelleme: 15 Kasım 2026
 | Konu | Karar |
 | --- | --- |
 | Ses motoru | `sherpa_onnx` 2.0.1 (Web: WASM + Web Worker, macOS: yerel + isolate) |
-| Model | Pocket TTS Türkçe, `wite-tech/pocket-tts-turkish`, CC-BY-4.0, INT8 ONNX |
+| Model | Pocket TTS Türkçe, `wite-tech/pocket-tts-turkish`, CC-BY-4.0, INT8 LM + fp32 Mimi kod çözücü |
 | Sesler | `female_1..3`, `male_1..3` — Elif, Zeynep, Defne, Emre, Kerem, Mert |
 | MP3 | `shine_dart` 0.1.1 (LGPL-2.0), 24 kHz → 48 kHz, 160 kbps mono |
-| Ses işleme | Cümle bazlı sentez, sinc yeniden örnekleme, WSOLA hız kontrolü, ses bazlı EQ + de-esser, −20 LUFS / −1,5 dBTP |
+| Ses işleme | Cümle bazlı sentez, 32 tap sinc yeniden örnekleme, WSOLA hız kontrolü, ses bazlı EQ + ölçülü de-esser, −18 LUFS / −1,5 dBTP |
 | İngilizce sesletim | Özel harita + CMUdict sözlüğü + kural tabanlı G2P + Türkçe kelime koruması |
 | Oynatma | `audioplayers` 6.8.1, `BytesSource`; önizlemeler WAV |
 | Durum | `provider` + `ChangeNotifier`; `shared_preferences` |
@@ -43,10 +43,10 @@ CC-BY-4.0 olması ve altı konuşmacı sunması nedeniyle Pocket TTS seçildi.
 ## 3. Tamamlanan işler
 
 ### Model ve varlıklar
-- Model ağırlıkları indirildi, INT8 ONNX'e aktarıldı ve
-  `assets/models/pocket_tts_tr/` altına yerleştirildi (~143 MB):
+- Model ağırlıkları indirildi, ONNX'e aktarıldı ve
+  `assets/models/pocket_tts_tr/` altına yerleştirildi (~157 MB):
   `lm_flow.int8.onnx`, `lm_main.int8.onnx`, `encoder.onnx`,
-  `decoder.int8.onnx`, `text_conditioner.onnx`, `vocab.json`,
+  `decoder.onnx` (fp32 Mimi), `text_conditioner.onnx`, `vocab.json`,
   `token_scores.json`.
 - Python `sherpa-onnx` ile `female_1` ve `male_1` için sessiz olmayan ses
   üretimi doğrulandı.
@@ -580,3 +580,63 @@ veya CDN'e taşınmalıdır (uygulama yine çevrimdışı kalır).
 - **Kimlik bilgisi:** Lisans ve künyede “Mehmet ICME” kullanıldı; gerçek
   ad/e-posta farklıysa `LICENSE`, `CITATION.cff` ve `pubspec.yaml`
   güncellenmelidir.
+
+## 13. 1.1.0 — Doğallık turu ve model karşılaştırması (25 Kasım 2026)
+
+### Düzeltilen ana sorun: yeniden örnekleyici
+
+24 kHz model çıktısı 48 kHz'e çevrilirken kesim frekansı Nyquist'in
+%47'sinde (5,6 kHz) kalıyordu. Ölçüm: 6 kHz −14 dB, 8 kHz −38 dB,
+10 kHz −73 dB. Bu, sesin boğuk ve tizsiz duyulmasının ana nedeniydi.
+Kesim %94'e, tap sayısı 32'ye, Kaiser β 8,6'ya çıkarıldı. Artık 6–10 kHz
+−1 dB içinde, görüntüler −40 dB altında. Regresyon testleri eklendi.
+
+### DSP ve EQ
+
+- `DspProfile.natural`: 60 Hz high-pass, 220 Hz −1,5 dB low shelf,
+  550 Hz +0,8 dB gövde, 2,8 kHz +0,8 dB varlık, de-esser 0,6, kompresör
+  kapalı, −18 LUFS / −1,5 dBTP.
+- Altı sesin EQ'su ölçülen spektruma göre yeniden ayarlandı.
+- SQUIM_OBJECTIVE PESQ (natural): Elif 3,609; Zeynep 3,238; Defne 3,226;
+  Emre 2,437; Kerem 2,353; Mert 2,422. Altısı da eski profili geçti
+  (3,416 / 3,100 / 3,083 / 2,010 / 2,307 / 2,190).
+
+### Model paketi
+
+- Mimi kod çözücüsü INT8 yerine fp32: `decoder.onnx` 41.478.706 bayt.
+- Paket toplamı 165.084.904 bayt (~157 MB); `approximateTotalBytes`
+  165.000.000.
+- Cümle başına deterministik tohum (42, 104729 adım) eklendi.
+
+### Alternatif model değerlendirmesi
+
+Aynı metin, seviye eşitlenmiş, UTMOS22 (1–5) ile ölçüldü:
+
+| Model | Lisans | Boyut | Ses | UTMOS |
+| --- | --- | --- | --- | --- |
+| Pocket TTS (mevcut) | CC-BY-4.0 | ~157 MB | 6 | Elif 3,90; Emre 2,82; aralık 2,82–3,90 |
+| Canora Turkish int8 | Apache-2.0 | 115 MB | 2 | elif 3,57; emre 3,50 |
+| Canora Turkish fp16 | Apache-2.0 | 163 MB | 2 | elif 3,90; emre ~3,8 |
+| Canora Turkish fp32 | Apache-2.0 | 325 MB | 2 | üretici beyanı 4,24 / 4,04 |
+| Clarvia tiny | Apache-2.0 | 20 MB | 10 | female_1 3,01; male_1 2,90 |
+| Piper dfki medium | CC-BY-4.0 | 63 MB | 1 | 3,71 |
+
+Sonuç: Web/masaüstü için makul boyutta kalan izin verici modeller
+arasında Pocket TTS'in en iyi kadın sesi (3,90) hâlâ en yüksek doğallıkta.
+Canora fp16 aynı seviyeye ulaşıyor ama yalnızca 2 ses sunuyor ve fp16
+ONNX'in web CPU/WASM desteği güvenilir değil. Clarvia çok küçük ve 10 sesli
+ama doğallığı belirgin şekilde düşük. Piper tek sesli ve 3,71'de kalıyor.
+
+### Referans kaydı deneyi
+
+Pocket TTS ses klonlama kullandığı için çıktı, referans kaydın kalitesini
+izliyor. Mevcut erkek referanslarının UTMOS'u düşük (male_1 1,84;
+male_2 2,26; male_3 2,54), kadın referansları daha iyi (female_1 4,32).
+Canora `emre` referansıyla aynı Pocket motoru 2,93 → 3,62'ye çıktı;
+Canora `elif` referansı Zeynep'i 3,70'e taşıdı. Bu, model değiştirmeden
+erkek seslerini iyileştirmenin en ucuz yolu. Ancak ses kimliği Canora'nın
+tasarlanmış sesine dayanır ve yalnızca bir erkek tınısı verir; üç ayrı
+erkek sesi için yeterli değildir.
+
+Karşılaştırma sayfası: `build/ses-karsilastirma/index.html` (dinleme
+örnekleri, seviye eşitlenmiş).

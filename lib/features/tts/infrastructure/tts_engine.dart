@@ -16,6 +16,7 @@ class TtsSynthesisRequest {
     required this.numSteps,
     required this.normalizedText,
     required this.voiceId,
+    this.seed = 42,
   });
 
   final String text;
@@ -25,6 +26,10 @@ class TtsSynthesisRequest {
   final int numSteps;
   final String normalizedText;
   final String voiceId;
+
+  /// Üretim tohumu. Cümle başına değişir; aynı metin tekrar
+  /// seslendirildiğinde sonuç yine belirlenebilir kalır.
+  final int seed;
 }
 
 /// Platformdan bağımsız seslendirme motoru sözleşmesi.

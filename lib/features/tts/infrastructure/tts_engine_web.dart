@@ -156,7 +156,9 @@ class WebTtsEngine implements TtsEngine {
     message['numSteps'] = request.numSteps.toJS;
     message['generationId'] = id.toJS;
     message['silenceScale'] = PocketTtsParams.silenceScale.toJS;
-    message['extra'] = _extraToJs(PocketTtsParams.extra);
+    message['extra'] = _extraToJs(
+      PocketTtsParams.extraForSeed(request.seed),
+    );
     message['referenceSampleRate'] = request.referenceSampleRate.toJS;
     message['referenceAudio'] = _toFloat32(request.referenceSamples);
     _worker!.postMessage(message);

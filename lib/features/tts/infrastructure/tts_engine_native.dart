@@ -117,6 +117,7 @@ class NativeTtsEngine implements TtsEngine {
         referenceSampleRate: request.referenceSampleRate,
         speed: request.speed,
         numSteps: request.numSteps,
+        seed: request.seed,
       ),
     );
 
@@ -260,7 +261,7 @@ void _isolateEntry(SendPort mainPort) {
             referenceAudio: message.referenceSamples,
             referenceSampleRate: message.referenceSampleRate,
             silenceScale: PocketTtsParams.silenceScale,
-            extra: PocketTtsParams.extra,
+            extra: PocketTtsParams.extraForSeed(message.seed),
           ),
           onProgress: (samples, progress) {
             mainPort.send(

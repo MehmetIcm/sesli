@@ -141,7 +141,7 @@ class EditorCard extends StatelessWidget {
                 ),
                 if (MediaQuery.sizeOf(context).width > 720)
                   Text(
-                    '⌘ / Ctrl + Enter ile seslendir',
+                    'Cmd / Ctrl + Enter ile seslendir',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: scheme.onSurfaceVariant.withValues(alpha: 0.8),
                     ),

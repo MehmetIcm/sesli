@@ -53,16 +53,16 @@ void main() {
         'İkinci cümle!',
         'Üçüncü cümle?',
       ]);
-      expect(segments[0].pauseAfterMs, 360);
-      expect(segments[1].pauseAfterMs, 390);
-      expect(segments[2].pauseAfterMs, 430);
+      expect(segments[0].pauseAfterMs, 300);
+      expect(segments[1].pauseAfterMs, 340);
+      expect(segments[2].pauseAfterMs, 360);
     });
 
     test('virgül ve iki nokta için daha kısa duraklama verir', () {
-      expect(TextChunker.pauseAfter('Merhaba,'), 160);
-      expect(TextChunker.pauseAfter('Şöyle:'), 280);
-      expect(TextChunker.pauseAfter('Belki;'), 230);
-      expect(TextChunker.pauseAfter('Bekle...'), 600);
+      expect(TextChunker.pauseAfter('Merhaba,'), 130);
+      expect(TextChunker.pauseAfter('Şöyle:'), 250);
+      expect(TextChunker.pauseAfter('Belki;'), 200);
+      expect(TextChunker.pauseAfter('Bekle...'), 520);
     });
 
     test('uzun cümleyi ara nefes payıyla böler', () {
@@ -74,7 +74,7 @@ void main() {
         expect(segment.pauseAfterMs, 150);
         expect(segment.continuation, isTrue);
       }
-      expect(segments.last.pauseAfterMs, 360);
+      expect(segments.last.pauseAfterMs, 300);
       expect(segments.last.continuation, isFalse);
       for (final segment in segments) {
         expect(segment.text.length, lessThanOrEqualTo(40));

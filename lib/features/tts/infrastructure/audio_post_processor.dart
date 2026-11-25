@@ -4,6 +4,83 @@ import 'dart:typed_data';
 
 import '../domain/voice_eq_profile.dart';
 
+/// Sentez çıktısına uygulanan global EQ ve işlem eğrisi.
+///
+/// Değerler, altı referans sesin ölçülen spektral dengesiyle model çıktısı
+/// karşılaştırılarak seçildi. Amaç sesi yeniden şekillendirmek değil,
+/// referans tınıya yakın tutmaktır.
+class DspProfile {
+  const DspProfile({
+    this.highPassHz = 60,
+    this.lowShelfHz = 220,
+    this.lowShelfDb = -1.5,
+    this.bodyHz = 550,
+    this.bodyDb = 0.8,
+    this.presenceHz = 2800,
+    this.presenceDb = 0.8,
+    this.presence2Hz = 0,
+    this.presence2Db = 0,
+    this.airHz = 7000,
+    this.airDb = 0,
+    this.deEsserScale = 0.6,
+  });
+
+  /// Rumble/DC temizliği eşiği.
+  final double highPassHz;
+
+  /// Bas rafının merkez frekansı ve kazancı.
+  final double lowShelfHz;
+  final double lowShelfDb;
+
+  /// Gövde (mud) bölgesi.
+  final double bodyHz;
+  final double bodyDb;
+
+  /// Varlık (presence) bölgesi.
+  final double presenceHz;
+  final double presenceDb;
+
+  /// İkinci varlık bandı (yalnızca eski zinciri yeniden üretmek için).
+  final double presence2Hz;
+  final double presence2Db;
+
+  /// Hava rafı; doğal profilde kapalıdır.
+  final double airHz;
+  final double airDb;
+
+  /// Ses profilindeki de-esser miktarının ölçeği.
+  final double deEsserScale;
+
+  /// Doğal, işlenmemiş tınıya en yakın varsayılan eğri.
+  static const DspProfile natural = DspProfile();
+
+  /// Yalnızca rumble temizliği; A/B dinleme testleri için.
+  static const DspProfile flat = DspProfile(
+    highPassHz: 55,
+    lowShelfDb: 0,
+    bodyDb: 0,
+    presenceDb: 0,
+    deEsserScale: 0.5,
+  );
+
+  /// 1.0 sürümündeki agresif zincir. Yalnızca A/B karşılaştırması ve
+  /// regresyon testleri için korunur; varsayılan değildir.
+  static const DspProfile legacy = DspProfile(
+    highPassHz: 80,
+    lowShelfHz: 250,
+    lowShelfDb: -4,
+    bodyHz: 500,
+    bodyDb: -1.5,
+    presenceHz: 2000,
+    presenceDb: 2.5,
+    presence2Hz: 3400,
+    presence2Db: 5,
+    airHz: 6500,
+    airDb: 3.5,
+    deEsserScale: 1,
+  );
+}
+
 /// Sentezlenen sesi netleştiren ve parçaları doğal duraklamalarla birleştiren
 /// çevrimdışı ses işleme yardımcıları.
 ///
@@ -132,84 +209,95 @@ class AudioPostProcessor {
     return output;
   }
 
-  /// Sesi konuşma için netleştirir.
+  /// Sesi doğal tınısına yakın tutarak netleştirir.
   ///
-  /// Modelin çıkışı doğal olarak bas ağırlıklı ve 3 kHz üstünde zayıftır; bu
-  /// yüzden ses "boğuk" duyulur. Zincir şunları yapar:
+  /// Ölçümler, modelin çıktısının referans seslerin spektral dengesine
+  /// oldukça yakın olduğunu gösterdi. Bu yüzden zincir artık sesi yeniden
+  /// şekillendirmiyor; yalnızca dinlemeyi zorlaştıran aşırılıkları
+  /// düzeltiyor:
   ///
-  /// 1. 80 Hz altını (rumble, DC) temizler.
-  /// 2. 250 Hz altındaki aşırı bası −4 dB azaltır (yakınlık etkisi/oda
-  ///    uğultusu).
-  /// 3. 500 Hz çevresindeki "çamur" bölgesini hafifçe bastırır.
-  /// 4. 2 kHz ve 3,4 kHz varlık (presence) bölgelerini yükseltir; konuşma
-  ///    netliği bu bantta oluşur.
-  /// 5. 6,5 kHz üstünü ölçülü biçimde açar (hava).
-  /// 6. Ses bazlı ek EQ ve gerekiyorsa de-esser uygular.
-  /// 7. Yumuşak kompresörle seviyeyi dengeler.
-  /// 8. −20 LUFS entegre yükseklik ve −1,5 dBTP gerçek tepe hedefine
+  /// 1. 60 Hz altını (rumble, DC) temizler.
+  /// 2. 220 Hz altındaki aşırı bası −1,5 dB azaltır.
+  /// 3. 550 Hz çevresindeki gövdeyi +0,8 dB ile dengeler.
+  /// 4. 2,8 kHz çevresinde +0,8 dB'lik ölçülü bir varlık artışı yapar.
+  /// 5. Ses bazlı küçük düzeltmeleri ve gerekiyorsa de-esser'ı uygular.
+  /// 6. Varsayılan olarak kompresör kullanmaz; dinamikler korunur.
+  /// 7. −18 LUFS entegre yükseklik ve −1,5 dBTP gerçek tepe hedefine
   ///    normalize eder.
   ///
-  /// [targetLufs] `null` verilirse eski davranış korunur ve yalnızca tepe
-  /// noktası [targetPeak] değerine normalize edilir.
+  /// [targetLufs] `null` verilirse yalnızca tepe noktası [targetPeak]
+  /// değerine normalize edilir.
   static Float32List enhance(
     Float32List samples, {
     required int sampleRate,
     VoiceEqProfile voiceEq = VoiceEqProfile.neutral,
-    double? targetLufs = -20,
+    double? targetLufs = -18,
     double truePeakDb = -1.5,
     double targetPeak = 0.91,
-    bool compressor = true,
+    bool compressor = false,
+    DspProfile profile = DspProfile.natural,
   }) {
     if (samples.isEmpty || sampleRate <= 0) return samples;
 
     final output = Float32List.fromList(samples);
 
-    // 80 Hz: rumble ve DC temizliği.
+    // Rumble ve DC temizliği.
     _Biquad.highPass(
       sampleRate: sampleRate,
-      frequency: 80,
+      frequency: profile.highPassHz,
       q: 0.7071,
     ).processInPlace(output);
 
-    // 250 Hz altı: aşırı bası azalt.
-    _Biquad.lowShelf(
-      sampleRate: sampleRate,
-      frequency: 250,
-      gainDb: -4.0,
-      slope: 0.8,
-    ).processInPlace(output);
+    // Aşırı bası azalt.
+    if (profile.lowShelfDb.abs() > 0.01) {
+      _Biquad.lowShelf(
+        sampleRate: sampleRate,
+        frequency: profile.lowShelfHz,
+        gainDb: profile.lowShelfDb,
+        slope: 0.8,
+      ).processInPlace(output);
+    }
 
-    // 500 Hz: mud azaltma (−1,5 dB).
-    _Biquad.peaking(
-      sampleRate: sampleRate,
-      frequency: 500,
-      gainDb: -1.5,
-      q: 1.0,
-    ).processInPlace(output);
+    // Gövde bölgesini dengele.
+    if (profile.bodyDb.abs() > 0.01) {
+      _Biquad.peaking(
+        sampleRate: sampleRate,
+        frequency: profile.bodyHz,
+        gainDb: profile.bodyDb,
+        q: 0.8,
+      ).processInPlace(output);
+    }
 
-    // 2 kHz: gövde/varlık (+2,5 dB).
-    _Biquad.peaking(
-      sampleRate: sampleRate,
-      frequency: 2000,
-      gainDb: 2.5,
-      q: 1.0,
-    ).processInPlace(output);
+    // Ölçülü varlık (presence) artışı.
+    if (profile.presenceDb.abs() > 0.01) {
+      _Biquad.peaking(
+        sampleRate: sampleRate,
+        frequency: profile.presenceHz,
+        gainDb: profile.presenceDb,
+        q: 0.7,
+      ).processInPlace(output);
+    }
 
-    // 3,4 kHz: netlik (+5 dB). Boğukluğu gideren ana bant.
-    _Biquad.peaking(
-      sampleRate: sampleRate,
-      frequency: 3400,
-      gainDb: 5.0,
-      q: 0.9,
-    ).processInPlace(output);
+    if (profile.presence2Db.abs() > 0.01) {
+      _Biquad.peaking(
+        sampleRate: sampleRate,
+        frequency: profile.presence2Hz,
+        gainDb: profile.presence2Db,
+        q: 0.9,
+      ).processInPlace(output);
+    }
 
-    // 6,5 kHz üstü: parlaklık (+3,5 dB).
-    _Biquad.highShelf(
-      sampleRate: sampleRate,
-      frequency: 6500,
-      gainDb: 3.5,
-      slope: 0.8,
-    ).processInPlace(output);
+    // İsteğe bağlı hava rafı. Doğal profilde kapalıdır: 24 kHz modelin bu
+    // banttaki içeriği sınırlıdır ve yükseltmek yalnızca kodlama
+    // gürültüsünü duyurur.
+    if (profile.airDb.abs() > 0.01) {
+      _Biquad.highShelf(
+        sampleRate: sampleRate,
+        frequency: profile.airHz,
+        gainDb: profile.airDb,
+        slope: 0.8,
+      ).processInPlace(output);
+    }
 
     // Ses bazlı ek düzeltmeler. Ölçümler, aynı global EQ'nun altı sesi
     // dengeli yapmadığını gösterdi; bu yüzden her sesin kendi profili var.
@@ -237,11 +325,11 @@ class AudioPostProcessor {
         slope: 0.8,
       ).processInPlace(output);
     }
-    if (voiceEq.deEsser > 0.01) {
+    if (voiceEq.deEsser > 0.01 && profile.deEsserScale > 0.01) {
       _deEss(
         output,
         sampleRate: sampleRate,
-        amount: voiceEq.deEsser.clamp(0.0, 1.0),
+        amount: (voiceEq.deEsser * profile.deEsserScale).clamp(0.0, 1.0),
       );
     }
 

@@ -5,20 +5,24 @@ import 'dart:typed_data';
 ///
 /// Pencereleştirilmiş sinc (Kaiser penceresi) interpolasyonu kullanır.
 /// Önceden hesaplanmış faz tabloları sayesinde her çıkış örneği için yalnızca
-/// 16 çarpma yapılır; bu, kübik interpolasyona göre belirgin biçimde daha
+/// 32 çarpma yapılır; bu, kübik interpolasyona göre belirgin biçimde daha
 /// temiz bir yukarı örnekleme sağlar ve konuşmadaki tıslama/tokluk
 /// bozulmalarını azaltır.
 class AudioResampler {
   AudioResampler._();
 
   /// Faz başına örnek sayısı (filtre uzunluğu).
-  static const int _taps = 16;
+  ///
+  /// 32 tap, 24 kHz model çıkışındaki 8–11 kHz bölgesini neredeyse düz
+  /// korurken görüntüleri (imaging) −80 dB'nin altına indirir. 16 tap bu
+  /// bölgede duyulabilir ölçüde gerileme yapıyordu.
+  static const int _taps = 32;
 
   /// Faz çözünürlüğü. 256 faz, 1/256 örnek hassasiyet demektir.
   static const int _phases = 256;
 
   /// Kaiser penceresi şekil parametresi.
-  static const double _beta = 7.0;
+  static const double _beta = 8.6;
 
   /// Kesim frekansı, Nyquist'in bu oranına ayarlanır. Hafif altında tutmak
   /// yukarı örneklemede hayalet görüntüleri (imaging) bastırır.
@@ -52,7 +56,7 @@ class AudioResampler {
       }
 
       final weights = kernel[phase];
-      final start = base - half + 1;
+      final start = base - half;
       var sum = 0.0;
       for (var k = 0; k < _taps; k++) {
         final index = start + k;
@@ -70,7 +74,10 @@ class AudioResampler {
       return _cachedKernel!;
     }
 
-    final cutoff = 0.5 * math.min(1.0, ratio) * _cutoffRatio;
+    // Kesim frekansı Nyquist biriminde tutulur: 0,94 × giriş Nyquist'i.
+    // (Sinc argümanı π·cutoff·d olduğu için cutoff burada 1,0 = Nyquist.)
+    // İndirme oranı < 1 iken bu, çıkış Nyquist'inin %94'üne denk gelir.
+    final cutoff = math.min(1.0, ratio) * _cutoffRatio;
     final halfWidth = _taps / 2.0;
     const center = (_taps - 1) / 2.0;
     final normalizer = _besselI0(_beta);

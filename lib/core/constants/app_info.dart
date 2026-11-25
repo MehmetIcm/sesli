@@ -4,7 +4,7 @@ class AppInfo {
 
   static const String name = 'Sesli';
   static const String tagline = 'Metniniz, doğal Türkçe sesle.';
-  static const String version = '1.0.0';
+  static const String version = '1.1.0';
   static const String buildNumber = '1';
   static const String bundleId = 'com.mehmeticme.turkceSes';
 
@@ -19,8 +19,7 @@ class AppInfo {
       'https://mehmeticm.github.io/sesli/privacy.html';
 
   /// Kullanım koşullarının web adresi.
-  static const String termsUrl =
-      'https://mehmeticm.github.io/sesli/terms.html';
+  static const String termsUrl = 'https://mehmeticm.github.io/sesli/terms.html';
 
   static const String privacySummary =
       'Yazdığınız metinler cihazınızdan dışarı çıkmaz. Sunucu, bulut, '

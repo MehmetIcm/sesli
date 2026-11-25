@@ -14,10 +14,11 @@ lisans bildirimlerini içerir. Tam lisans metinleri ilgili paketlerin
 - **Lisans metni:** https://creativecommons.org/licenses/by/4.0/legalcode
 
 **Değişiklikler:** Model ağırlıkları, `lomotron/pocket-tts-onnx-export`
-aracıyla INT8 nicemleme kullanılarak ONNX biçimine aktarılmıştır. Ses
-kalitesini ve çıkarım biçimini etkileyen bu dönüştürme dışında model
-ağırlıkları değiştirilmemiştir. Altı konuşmacıya ait referans kayıtları
-modelle birlikte gelir.
+aracıyla ONNX biçimine aktarılmıştır. Dil modeli ve flow bileşeni INT8
+nicemlenirken sesin en çok duyulan bileşeni olan Mimi kod çözücüsü tam
+duyarlıkta (fp32) tutulmuştur. Ses kalitesini ve çıkarım biçimini etkileyen
+bu dönüştürme dışında model ağırlıkları değiştirilmemiştir. Altı
+konuşmacıya ait referans kayıtları modelle birlikte gelir.
 
 **Atıf:** Bu uygulama, Pocket TTS Türkçe modelini kullanır. Model,
 `wite-tech/pocket-tts-turkish` kaynağından CC-BY-4.0 lisansı altında
@@ -25,7 +26,8 @@ alınmıştır.
 
 > This work uses the Pocket TTS Turkish model from
 > `wite-tech/pocket-tts-turkish`, licensed under CC-BY-4.0. The model was
-> converted to INT8 ONNX format. See the license for the full terms.
+> converted to ONNX; the language model is INT8 and the Mimi decoder is
+> fp32. See the license for the full terms.
 
 ---
 

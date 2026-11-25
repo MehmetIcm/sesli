@@ -20,6 +20,7 @@ class TtsGenerateMessage extends TtsIsolateMessage {
     required this.referenceSampleRate,
     required this.speed,
     required this.numSteps,
+    this.seed = 42,
   });
 
   final int id;
@@ -28,6 +29,7 @@ class TtsGenerateMessage extends TtsIsolateMessage {
   final int referenceSampleRate;
   final double speed;
   final int numSteps;
+  final int seed;
 }
 
 class TtsDisposeMessage extends TtsIsolateMessage {

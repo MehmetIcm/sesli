@@ -33,17 +33,17 @@ Seslendirme, uygulamayla birlikte gelen ONNX modeliyle cihaz üzerinde
 | Alan | Durum |
 | --- | --- |
 | `flutter analyze` | Temiz (0 sorun) |
-| `flutter test` | 162 test geçiyor |
-| Web release derlemesi | Başarılı (`build/web`, ~201 MB) |
+| `flutter test` | 164 test geçiyor |
+| Web release derlemesi | Başarılı (`build/web`, ~219 MB) |
 | GitHub deposu | Herkese açık: https://github.com/MehmetIcm/sesli |
 | GitHub Pages yayını | Yayında ve doğrulandı: https://mehmeticm.github.io/sesli/ |
-| Sürüm | v1.0.0 (GitHub Release + etiket) |
+| Sürüm | v1.1.0 (GitHub Release + etiket) |
 | Chrome'da gerçek seslendirme | Doğrulandı (Elif, Emre ve Teknik örnek metni; 17,6 sn'de 20,9 sn ses) |
 | Oynatma biçimi | Doğrulandı (`data:audio/wav`, 48 kHz, mono, 16-bit, 20,9 sn) |
 | Oynat / duraklat / devam / sarma | Doğrulandı (tarayıcıda gerçek tıklamalarla) |
 | Gerçek MP3 indirme | Doğrulandı (`ffprobe`: MP3, 48 kHz, mono, 160 kbps) |
 | İngilizce kelime sesletimi | Doğrulandı (`webcam` → “vebkem”, `Cambridge` → “kembriç”) |
-| Çevrimdışı açılış | Doğrulandı (service worker `sesli-cache-v11`) |
+| Çevrimdışı açılış | Doğrulandı (service worker `sesli-cache-v13`) |
 | Çevrimdışı seslendirme | Doğrulandı (model + WASM + referans ses önbellekten) |
 | macOS derlemesi | **Yapılamadı** — bu makinede tam Xcode ve CocoaPods yok |
 
@@ -102,11 +102,11 @@ cp web/privacy.html web/terms.html web/robots.txt build/web/
 touch build/web/.nojekyll
 ```
 
-İlk açılışta model (~143 MB) motor başlatılırken indirilip önbelleğe alınır.
+İlk açılışta model (~157 MB) motor başlatılırken indirilip önbelleğe alınır.
 İlk yükleme tamamlandıktan sonra uygulama tamamen çevrimdışı çalışır.
 
 > **Bant genişliği notu:** GitHub Pages'in aylık ~100 GB yumuşak sınırı
-> vardır ve her yeni ziyaretçi ~150 MB indirir. Bu, aylık yaklaşık 600 yeni
+> vardır ve her yeni ziyaretçi ~165 MB indirir. Bu, aylık yaklaşık 600 yeni
 > ziyarete karşılık gelir. Trafik artarsa modeli ayrı bir CDN'e/Release
 > varlığına taşımak gerekir.
 
@@ -142,7 +142,7 @@ hdiutil create \
   -volname "Sesli" \
   -srcfolder build/macos/Build/Products/Release/Sesli.app \
   -ov -format UDZO \
-  Sesli-1.0.0.dmg
+  Sesli-1.1.0.dmg
 ```
 
 Dağıtım için uygulamanın imzalanması ve noterden geçirilmesi gerekir
@@ -175,11 +175,12 @@ lib/
   mono olarak kodlanır.
 - **Ses işleme:** Metin cümle bazında sentezlenir; her cümle ayrı üretilir ve
   noktalama işaretine göre değişen doğal duraklamalarla birleştirilir (cümle
-  sonu 360 ms, soru 430 ms, ünlem 390 ms, virgül 160 ms, paragraf 600 ms).
-  Ardından 80 Hz rumble temizliği, 250 Hz altında −4 dB bas kesme, 3,4 kHz'de
-  +5 dB varlık, 6,5 kHz üstünde +3,5 dB raf, **ses bazlı EQ**, gerektiğinde
-  de-esser, yumuşak kompresör ve **−20 LUFS / −1,5 dBTP** normalizasyonu
-  uygulanır. Hız WSOLA ile perde korunarak değiştirilir.
+  sonu 300 ms, soru 360 ms, ünlem 340 ms, virgül 130 ms, paragraf 480 ms).
+  Ardından 60 Hz rumble temizliği, 220 Hz altında −1,5 dB hafif bas kesme,
+  550 Hz'de +0,8 dB gövde, 2,8 kHz'de +0,8 dB varlık, **ses bazlı EQ**,
+  ölçülü de-esser ve **−18 LUFS / −1,5 dBTP** normalizasyonu uygulanır.
+  Agresif kompresör varsayılan olarak kapalıdır. Hız WSOLA ile perde
+  korunarak değiştirilir.
 - **Oynatma:** Kayıpsız 48 kHz WAV ile yapılır; MP3 yalnızca indirme
   içindir. Önizlemeler de WAV olarak çalınır.
 - **İngilizce sesletim:** `EnglishTransliterator`; özel kelime haritası,
@@ -191,7 +192,8 @@ lib/
 ## Model ve sesler
 
 - Model: **Pocket TTS Türkçe** (`wite-tech/pocket-tts-turkish`),
-  **CC-BY-4.0**, INT8 ONNX aktarımı, ~143 MB, 24 kHz.
+  **CC-BY-4.0**, ONNX aktarımı; dil modeli INT8, Mimi kod çözücüsü fp32,
+  ~157 MB, 24 kHz.
 - ONNX dışa aktarma: `lomotron/pocket-tts-onnx-export` (MIT).
 - Altı konuşmacı, modelin kendi referans kayıtlarıyla ses klonlama yoluyla
   elde edilir; perde kaydırma (pitch shifting) kullanılmaz.
@@ -216,8 +218,8 @@ ekranlar ve ana akış widget testleri.
 ## Bilinen sınırlamalar
 
 - macOS derlemesi ve gerçek cihaz performansı bu ortamda test edilemedi.
-- Web'de ilk açılış ~201 MB indirir; sonrası çevrimdışıdır. Depo ~150 MB
-  (model ~143 MB) olduğu için ilk `git clone` uzun sürebilir.
+- Web'de ilk açılış ~219 MB indirir; sonrası çevrimdışıdır. Depo ~165 MB
+  (model ~157 MB) olduğu için ilk `git clone` uzun sürebilir.
 - Seslendirme hızı cihaza göre değişir; bu makinede ~11 saniyelik ses
   yaklaşık 11 saniyede üretildi (yaklaşık gerçek zamanlı).
 - Tarayıcı sekmesi arka plandayken veya pencere gizliyken kare üretimi

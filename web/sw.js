@@ -1,10 +1,10 @@
 // Sesli — çevrimdışı önbellek.
 //
 // Uygulama kabuğu, WASM motoru ve model dosyaları ilk yüklemede tarayıcı
-// önbelleğine alınır; sonraki açılışlar ağ olmadan çalışır. Model ~143 MB
+// önbelleğine alınır; sonraki açılışlar ağ olmadan çalışır. Model ~157 MB
 // olduğu için kurulum sırasında topluca indirmek yerine ilk kullanımda
 // (motor başlatılırken) önbelleğe alınır.
-const CACHE_NAME = 'sesli-cache-v11';
+const CACHE_NAME = 'sesli-cache-v13';
 
 // Uygulama kabuğu dosyaları her açılışta ağdan doğrulanır; böylece yeni
 // sürüm yayınlandığında tarayıcı eski JavaScript'i çalıştırmaya devam

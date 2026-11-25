@@ -184,7 +184,7 @@ void main() {
       expect(output.length, input.length);
       expect(
         AudioPostProcessor.integratedLufs(output, sampleRate),
-        closeTo(-20, 1.0),
+        closeTo(-18, 1.0),
       );
       expect(AudioPostProcessor.truePeakDb(output), lessThanOrEqualTo(-1.4));
     });
@@ -296,10 +296,13 @@ void main() {
     });
 
     test('her ses için profil tanımlıdır', () {
-      expect(VoiceCatalog.eqFor('female_1').deEsser, 1.0);
-      expect(VoiceCatalog.eqFor('female_1').presenceDb, -1.0);
-      expect(VoiceCatalog.eqFor('male_2').lowShelfDb, -4.0);
-      expect(VoiceCatalog.eqFor('male_2').presenceDb, 4.0);
+      expect(VoiceCatalog.eqFor('female_1').deEsser, 0);
+      expect(VoiceCatalog.eqFor('female_1').presenceDb, -1.5);
+      expect(VoiceCatalog.eqFor('male_1').presenceDb, -1.5);
+      expect(VoiceCatalog.eqFor('male_1').airDb, -1.0);
+      expect(VoiceCatalog.eqFor('male_2').presenceDb, 3.0);
+      expect(VoiceCatalog.eqFor('male_2').lowShelfDb, -2.0);
+      expect(VoiceCatalog.eqFor('male_3').lowShelfDb, -2.5);
       expect(VoiceCatalog.eqFor('bilinmeyen').isNeutral, isTrue);
     });
   });

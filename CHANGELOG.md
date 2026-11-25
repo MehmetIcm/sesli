@@ -10,6 +10,45 @@ ve [Anlamsal Sürümleme](https://semver.org/lang/tr/) ilkelerini izler.
 - macOS imzalı DMG paketi (Xcode + CocoaPods gerektirir).
 - Safari ve Firefox için çalışma zamanı testleri.
 
+## [1.1.0] — 2026-11-25
+
+Doğallık ve konuşma akışı sürümü.
+
+### Düzeltildi
+
+- **Yeniden örnekleyici:** 24 → 48 kHz dönüşümünde kesim frekansı
+  Nyquist'in %47'sinde (5,6 kHz) kalıyordu; 6 kHz −14 dB, 8 kHz −38 dB,
+  10 kHz −73 dB zayıflıyordu. Kesim %94'e çıkarıldı, 32 tap ve Kaiser
+  β=8,6 kullanıldı. 6–10 kHz artık −1 dB içinde; görüntüler −40 dB altında.
+  Boğuk/tiz kaybı hissinin ana nedeni buydu.
+- **Ses sonrası işleme:** Eski agresif zincir (250 Hz altında −4 dB,
+  3,4 kHz'de +5 dB, 6,5 kHz üstünde +3,5 dB, kompresör, −20 LUFS) yerine
+  `DspProfile.natural` geldi: 60 Hz high-pass, 220 Hz'de −1,5 dB low shelf,
+  550 Hz'de +0,8 dB gövde, 2,8 kHz'de +0,8 dB varlık, 0,6 ölçekli de-esser,
+  kompresör kapalı, −18 LUFS / −1,5 dBTP.
+- **Ses bazlı EQ** altı sesin ölçülen spektrumuna göre yeniden ayarlandı.
+- **Mimi kod çözücüsü** INT8 yerine fp32 kullanılıyor; kuantizasyon
+  gürültüsü azaldı. Model paketi ~157 MB.
+- **Duraklamalar** kısaltıldı: cümle 300 ms, soru 360 ms, ünlem 340 ms,
+  üç nokta 520 ms, virgül 130 ms, paragraf 480 ms; başlangıç 120 ms,
+  bitiş 260 ms.
+- **Tohumlar:** Her cümle için deterministik tohum (42, 104729 adım)
+  kullanılıyor; aynı metin aynı sesi üretiyor.
+
+### Ölçümler
+
+- SQUIM_OBJECTIVE PESQ (natural): Elif 3,609; Zeynep 3,238; Defne 3,226;
+  Emre 2,437; Kerem 2,353; Mert 2,422. Altısı da eski profili geçti.
+- `flutter analyze`: 0 sorun; `flutter test`: 164 test geçiyor.
+- WebKit uçtan uca: 48 kHz mono 16-bit WAV, 15,624 sn, 1,43 MB; MP3
+  312.960 bayt; çevrimdışı yeniden yükleme ve oynatma doğrulandı.
+
+### Değişti
+
+- Web service worker önbelleği `sesli-cache-v13`; yazı tipi istekleri
+  yerel kalmaya zorlanıyor.
+- Sürüm 1.1.0.
+
 ## [1.0.0] — 2026-11-16
 
 İlk herkese açık sürüm.
@@ -48,5 +87,6 @@ ve [Anlamsal Sürümleme](https://semver.org/lang/tr/) ilkelerini izler.
 - Web: 20,9 sn ses 17,6 sn'de üretildi; MP3 `ffprobe` ile 48 kHz / 160 kbps
   doğrulandı.
 
-[Yayınlanmadı]: https://github.com/MehmetIcm/sesli/compare/v1.0.0...HEAD
+[Yayınlanmadı]: https://github.com/MehmetIcm/sesli/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/MehmetIcm/sesli/releases/tag/v1.1.0
 [1.0.0]: https://github.com/MehmetIcm/sesli/releases/tag/v1.0.0
