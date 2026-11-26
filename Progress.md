@@ -3,7 +3,7 @@
 Sesli — tamamen çevrimdışı Türkçe metin seslendirme uygulaması.
 Bu dosya, yapılan işi ve doğrulama sonuçlarını dürüstçe kaydeder.
 
-Son güncelleme: 25 Kasım 2026
+Son güncelleme: 26 Kasım 2026
 
 ## 1. Kapsam ve hedefler
 
@@ -641,7 +641,7 @@ erkek sesi için yeterli değildir.
 Karşılaştırma sayfası: `build/ses-karsilastirma/index.html` (dinleme
 örnekleri, seviye eşitlenmiş).
 
-## 14. 1.2.0 — Referans ses kalitesi (25 Kasım 2026)
+## 14. 1.2.0 — Referans ses kalitesi (25–26 Kasım 2026)
 
 Kullanıcı dinlemesinde “Pocket TTS — Zeynep + Canora referansı” en iyi
 seçenek olarak işaretlendi. Clarvia'ya geçmek yerine Pocket TTS motoru

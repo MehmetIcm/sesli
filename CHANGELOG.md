@@ -10,7 +10,7 @@ ve [Anlamsal Sürümleme](https://semver.org/lang/tr/) ilkelerini izler.
 - macOS imzalı DMG paketi (Xcode + CocoaPods gerektirir).
 - Safari ve Firefox için çalışma zamanı testleri.
 
-## [1.2.0] — 2026-11-25
+## [1.2.0] — 2026-11-26
 
 Referans ses kalitesi sürümü.
 

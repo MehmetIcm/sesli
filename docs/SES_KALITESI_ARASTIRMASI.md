@@ -833,7 +833,7 @@ ayrıca değerlendirilmelidir.
 
 ---
 
-## 8. 1.2.0 referans ses turu (25 Kasım 2026)
+## 8. 1.2.0 referans ses turu (25–26 Kasım 2026)
 
 Pocket TTS ses klonlama kullandığı için çıktı, referans kaydın kalitesini
 izler. 1.1.0'daki ölçümlerde erkek referanslarının UTMOS'u 1,84–2,54
