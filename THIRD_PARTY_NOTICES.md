@@ -17,8 +17,10 @@ lisans bildirimlerini içerir. Tam lisans metinleri ilgili paketlerin
 aracıyla ONNX biçimine aktarılmıştır. Dil modeli ve flow bileşeni INT8
 nicemlenirken sesin en çok duyulan bileşeni olan Mimi kod çözücüsü tam
 duyarlıkta (fp32) tutulmuştur. Ses kalitesini ve çıkarım biçimini etkileyen
-bu dönüştürme dışında model ağırlıkları değiştirilmemiştir. Altı
-konuşmacıya ait referans kayıtları modelle birlikte gelir.
+bu dönüştürme dışında model ağırlıkları değiştirilmemiştir. Elif, Kerem ve
+Mert konuşmacılarına ait referans kayıtları modelle birlikte gelir. Zeynep,
+Defne ve Emre referansları ise aşağıda belirtilen Apache-2.0 lisanslı sentetik
+Türkçe ses modelleriyle üretilmiştir.
 
 **Atıf:** Bu uygulama, Pocket TTS Türkçe modelini kullanır. Model,
 `wite-tech/pocket-tts-turkish` kaynağından CC-BY-4.0 lisansı altında
@@ -28,6 +30,44 @@ alınmıştır.
 > `wite-tech/pocket-tts-turkish`, licensed under CC-BY-4.0. The model was
 > converted to ONNX; the language model is INT8 and the Mimi decoder is
 > fp32. See the license for the full terms.
+
+---
+
+## Canora Turkish (referans ses)
+
+- **Eser:** Canora Turkish — `elif` ve `emre` sesleri
+- **Kaynak:** https://huggingface.co/empiriolabsai/canora-turkish
+- **Lisans:** Apache License 2.0
+- **Kullanım:** Zeynep ve Emre seslerinin 24 kHz referans kayıtları bu
+  modelle üretilmiştir. Model ağırlıkları uygulamaya dahil edilmez;
+  yalnızca üretilen kısa referans WAV dosyaları paketlenir.
+
+Canora Turkish, EmpirioLabs AI tarafından geliştirilmiştir. Sesler
+tasarlanmış sentetik seslerdir; gerçek bir kişinin kaydı veya taklidi
+değildir. Apache-2.0 lisans metni `licenses/Apache-2.0.txt` dosyasındadır.
+
+> Reference voice clips for Zeynep and Emre were generated with Canora
+> Turkish (`empiriolabsai/canora-turkish`), licensed under the Apache
+> License 2.0. No model weights are distributed with this application.
+
+---
+
+## Clarvia TTS tiny (referans ses)
+
+- **Eser:** Clarvia TTS tiny — `female_4` sesi
+- **Kaynak:** https://huggingface.co/wite-tech/clarvia-tts-tiny
+- **Lisans:** Apache License 2.0
+- **Kullanım:** Defne sesinin 24 kHz referans kaydı bu modelle üretilmiştir.
+  Model ağırlıkları uygulamaya dahil edilmez; yalnızca üretilen kısa
+  referans WAV dosyası paketlenir.
+
+Clarvia TTS tiny, `n4ze3m/tiny-voca` mimarisi üzerine kurulmuş Türkçe bir
+sentetik ses modelidir. Apache-2.0 lisans metni `licenses/Apache-2.0.txt`
+dosyasındadır.
+
+> The reference voice clip for Defne was generated with Clarvia TTS tiny
+> (`wite-tech/clarvia-tts-tiny`), licensed under the Apache License 2.0.
+> No model weights are distributed with this application.
 
 ---
 

@@ -4,7 +4,7 @@
 // önbelleğine alınır; sonraki açılışlar ağ olmadan çalışır. Model ~157 MB
 // olduğu için kurulum sırasında topluca indirmek yerine ilk kullanımda
 // (motor başlatılırken) önbelleğe alınır.
-const CACHE_NAME = 'sesli-cache-v13';
+const CACHE_NAME = 'sesli-cache-v14';
 
 // Uygulama kabuğu dosyaları her açılışta ağdan doğrulanır; böylece yeni
 // sürüm yayınlandığında tarayıcı eski JavaScript'i çalıştırmaya devam

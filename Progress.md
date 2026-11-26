@@ -27,7 +27,7 @@ Son güncelleme: 25 Kasım 2026
 | --- | --- |
 | Ses motoru | `sherpa_onnx` 2.0.1 (Web: WASM + Web Worker, macOS: yerel + isolate) |
 | Model | Pocket TTS Türkçe, `wite-tech/pocket-tts-turkish`, CC-BY-4.0, INT8 LM + fp32 Mimi kod çözücü |
-| Sesler | `female_1..3`, `male_1..3` — Elif, Zeynep, Defne, Emre, Kerem, Mert |
+| Sesler | `female_1..3`, `male_1..3` — Elif, Zeynep, Defne, Emre, Kerem, Mert. Zeynep/Emre Canora, Defne Clarvia referansı (Apache-2.0) |
 | MP3 | `shine_dart` 0.1.1 (LGPL-2.0), 24 kHz → 48 kHz, 160 kbps mono |
 | Ses işleme | Cümle bazlı sentez, 32 tap sinc yeniden örnekleme, WSOLA hız kontrolü, ses bazlı EQ + ölçülü de-esser, −18 LUFS / −1,5 dBTP |
 | İngilizce sesletim | Özel harita + CMUdict sözlüğü + kural tabanlı G2P + Türkçe kelime koruması |
@@ -640,3 +640,50 @@ erkek sesi için yeterli değildir.
 
 Karşılaştırma sayfası: `build/ses-karsilastirma/index.html` (dinleme
 örnekleri, seviye eşitlenmiş).
+
+## 14. 1.2.0 — Referans ses kalitesi (25 Kasım 2026)
+
+Kullanıcı dinlemesinde “Pocket TTS — Zeynep + Canora referansı” en iyi
+seçenek olarak işaretlendi. Clarvia'ya geçmek yerine Pocket TTS motoru
+korundu ve referans kayıtları iyileştirildi.
+
+### Yeni referanslar
+
+| Ses | Referans | Lisans | Süre |
+| --- | --- | --- | ---: |
+| Zeynep | Canora Turkish `elif` | Apache-2.0 | 4,70 s |
+| Defne | Clarvia TTS tiny `female_4` | Apache-2.0 | 3,74 s |
+| Emre | Canora Turkish `emre` | Apache-2.0 | 4,32 s |
+
+Referanslar, dinleme testindeki ile aynı ön işlemeden geçirildi: sessizlik
+kırpma, 5 s sınırı, DC temizliği, tepe 0,9. Model ağırlıkları uygulamaya
+dahil edilmedi; yalnızca üretilen kısa WAV dosyaları paketlendi.
+
+### Ölçüm
+
+Aynı metin, ham 24 kHz model çıktısı, 3 tohum ortalaması, UTMOS22:
+
+| Ses | Önce | Sonra | Fark |
+| --- | ---: | ---: | ---: |
+| Elif | 3,75 | 3,75 | 0 |
+| Zeynep | 3,36 | **3,78** | +0,42 |
+| Defne | 3,52 | **3,73** | +0,21 |
+| Emre | 2,92 | **3,61** | +0,69 |
+| Kerem | 3,01 | 3,01 | 0 |
+| Mert | 3,03 | 3,03 | 0 |
+| **Ortalama** | **3,27** | **3,49** | **+0,22** |
+
+Adaylar arasında en yüksek ortalamalar: Canora `elif` 3,80, mevcut
+`female_1` 3,75, Piper dfki 3,68, Clarvia `female_4` 3,68, Canora `emre`
+3,52. Erkeklerde Clarvia `m1` 3,14 ve `male_3` 3,10, mevcut Kerem/Mert
+(3,01/3,03) ile aynı bantta kaldığı için değiştirilmedi.
+
+### Diğer değişiklikler
+
+- Yeni referanslarda ek ses bazlı EQ kaldırıldı; global `natural` profili
+  yeterli.
+- Üç sesin önizleme kayıtları yeniden üretildi.
+- `LICENSES.md`, `THIRD_PARTY_NOTICES.md`, uygulama içi Lisanslar ekranı
+  Canora ve Clarvia atıflarıyla güncellendi.
+- Service worker önbelleği `sesli-cache-v14`; sürüm 1.2.0.
+- `flutter analyze`: 0 sorun; `flutter test`: 164 test geçiyor.

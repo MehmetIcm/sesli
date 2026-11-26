@@ -830,3 +830,60 @@ kalitesinden kaynaklanıyor. Canora `emre` referansı Emre'yi 2,93 → 3,62'ye
 üç ayrı erkek sesi için yeterli değildir. Model değiştirmeden uygulanacak
 en ucuz iyileştirme budur; yine de ses kimliği ve lisans atfı açısından
 ayrıca değerlendirilmelidir.
+
+---
+
+## 8. 1.2.0 referans ses turu (25 Kasım 2026)
+
+Pocket TTS ses klonlama kullandığı için çıktı, referans kaydın kalitesini
+izler. 1.1.0'daki ölçümlerde erkek referanslarının UTMOS'u 1,84–2,54
+arasındaydı; bu, erkek çıktılarının 2,82–3,18 bandında kalmasının ana
+nedeniydi.
+
+### 8.1 Aday referanslar
+
+Aynı metin, ham 24 kHz model çıktısı ve üç tohum (42, 43, 44) ile her
+aday referansın Pocket çıktısı ölçüldü. UTMOS22 ortalamaları:
+
+| Referans | Cinsiyet | UTMOS |
+| --- | --- | ---: |
+| Canora `elif` | kadın | **3,80** |
+| Mevcut `female_1` | kadın | 3,75 |
+| Piper `dfki` | kadın | 3,68 |
+| Clarvia `female_4` | kadın | 3,68 |
+| Clarvia `female_5` | kadın | 3,55 |
+| Mevcut `female_3` | kadın | 3,52 |
+| Canora `emre` | erkek | **3,52** |
+| Clarvia `m1` | erkek | 3,14 |
+| Clarvia `male_3` | erkek | 3,10 |
+| Clarvia `male_5` | erkek | 3,05 |
+| Mevcut `male_3` | erkek | 3,03 |
+| Mevcut `male_2` | erkek | 3,01 |
+| Mevcut `male_1` | erkek | 2,92 |
+
+Erkeklerde Canora `emre` tek başına belirgin bir sıçrama sağlıyor; diğer
+adaylar mevcut Kerem/Mert ile aynı bantta. Bu nedenle yalnızca Emre
+değiştirildi, Kerem ve Mert'in kullanıcı tarafından bilinen tınıları
+korundu.
+
+### 8.2 Seçilen set
+
+| Ses | Referans | Önce | Sonra |
+| --- | --- | ---: | ---: |
+| Elif | mevcut `female_1` | 3,75 | 3,75 |
+| Zeynep | Canora `elif` | 3,36 | **3,78** |
+| Defne | Clarvia `female_4` | 3,52 | **3,73** |
+| Emre | Canora `emre` | 2,92 | **3,61** |
+| Kerem | mevcut `male_2` | 3,01 | 3,01 |
+| Mert | mevcut `male_3` | 3,03 | 3,03 |
+
+Altı sesin ortalaması 3,27 → 3,49. Referanslar 3,7–4,7 s, 24 kHz,
+sessizliği kırpılmış ve tepe noktası 0,9'a hizalanmış WAV dosyalarıdır.
+Yeni referanslarda ek ses bazlı EQ uygulanmaz.
+
+### 8.3 Lisans
+
+Canora Turkish (`empiriolabsai/canora-turkish`) ve Clarvia TTS tiny
+(`wite-tech/clarvia-tts-tiny`) Apache-2.0 lisanslıdır. Uygulamaya yalnızca
+bu modellerle üretilmiş kısa referans WAV dosyaları girer; model ağırlıkları
+dağıtılmaz. Atıflar `LICENSES.md` ve `THIRD_PARTY_NOTICES.md` içindedir.

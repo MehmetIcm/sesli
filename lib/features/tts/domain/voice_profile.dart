@@ -6,9 +6,10 @@ enum VoiceGender { female, male }
 /// Uygulamadaki bir Türkçe konuşmacıyı temsil eder.
 ///
 /// Pocket TTS, konuşmacıyı referans ses kaydıyla klonlar. Bu nedenle her
-/// profil, modelle birlikte gelen gerçek bir referans kaydına ve o sesin
-/// kısa bir tanıtım kaydına işaret eder. Perde kaydırma (pitch shift) ile
-/// üretilmiş yapay sesler kullanılmaz.
+/// profil bir referans kaydına ve o sesin kısa bir tanıtım kaydına işaret
+/// eder. Referansların bir kısmı modelle gelir; bir kısmı ise Apache-2.0
+/// lisanslı sentetik Türkçe ses modellerinden üretilmiştir. Çıktıda perde
+/// kaydırma (pitch shift) kullanılmaz.
 class VoiceProfile {
   const VoiceProfile({
     required this.id,

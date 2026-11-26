@@ -34,9 +34,11 @@ class LicensesScreen extends StatelessWidget {
                     name: PocketTtsModel.name,
                     license: PocketTtsModel.license,
                     note:
-                        '${PocketTtsModel.source} ağırlıklarının INT8 ONNX '
-                        'aktarımı. Atıf gerektirir; ticari kullanıma açıktır.',
+                        '${PocketTtsModel.source} ağırlıklarının INT8 LM + '
+                        'fp32 Mimi kod çözücü ONNX aktarımı. Atıf gerektirir; '
+                        'ticari kullanıma açıktır.',
                   ),
+
                   const _LicenseEntry(
                     name: 'Pocket TTS ONNX dışa aktarıcı',
                     license: 'MIT',
@@ -69,6 +71,28 @@ class LicensesScreen extends StatelessWidget {
                     name: 'ONNX Runtime',
                     license: 'MIT',
                     note: 'Model çıkarım motoru.',
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              _LicenseCard(
+                icon: Icons.record_voice_over_rounded,
+                title: 'Referans sesler',
+                entries: const [
+                  _LicenseEntry(
+                    name: 'Canora Turkish',
+                    license: 'Apache-2.0',
+                    note:
+                        'Zeynep ve Emre seslerinin referans kayıtları bu '
+                        'modelle üretildi. Model ağırlıkları uygulamaya '
+                        'dahil edilmez.',
+                  ),
+                  _LicenseEntry(
+                    name: 'Clarvia TTS tiny',
+                    license: 'Apache-2.0',
+                    note:
+                        'Defne sesinin referans kaydı bu modelle üretildi. '
+                        'Model ağırlıkları uygulamaya dahil edilmez.',
                   ),
                 ],
               ),

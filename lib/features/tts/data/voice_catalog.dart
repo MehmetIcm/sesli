@@ -5,9 +5,11 @@ import '../domain/voice_profile.dart';
 
 /// Uygulamayla birlikte gelen altı doğal Türkçe konuşmacı.
 ///
-/// Tüm sesler Pocket TTS Türkçe modelinin kendi referans kayıtlarıdır.
-/// Aynı model, farklı referans seslerle çalıştırılarak gerçekten farklı
-/// tınılar elde edilir.
+/// Pocket TTS, konuşmacıyı referans kaydıyla klonlar. Elif, Kerem ve Mert
+/// modelin kendi referans kayıtlarını kullanır; Zeynep, Defne ve Emre için
+/// daha temiz, izin verici lisanslı sentetik referanslar (Canora Turkish ve
+/// Clarvia TTS tiny, Apache-2.0) seçildi. Aynı motor farklı referanslarla
+/// çalıştırılarak gerçekten farklı tınılar elde edilir.
 class VoiceCatalog {
   VoiceCatalog._();
 
@@ -79,11 +81,11 @@ class VoiceCatalog {
   /// Değerler, altı sesin ham çıktısı ile referans kayıtlarının spektral
   /// dengesi karşılaştırılarak seçildi. Düzeltmeler bilinçli olarak küçük
   /// tutulur; büyük EQ eğrileri sesi doğal tınısından uzaklaştırıyordu.
+  ///
+  /// Yeni sentetik referanslar (Zeynep, Defne, Emre) zaten dengeli
+  /// geldiği için bu seslerde ek EQ uygulanmaz.
   static const Map<String, VoiceEqProfile> _eqProfiles = {
     'female_1': VoiceEqProfile(presenceDb: -1.5),
-    'female_2': VoiceEqProfile(lowShelfDb: -0.8, deEsser: 0.25),
-    'female_3': VoiceEqProfile(lowShelfDb: -2.5, presenceDb: -1.0),
-    'male_1': VoiceEqProfile(presenceDb: -1.5, airDb: -1.0),
     'male_2': VoiceEqProfile(
       lowShelfDb: -2.0,
       presenceDb: 3.0,

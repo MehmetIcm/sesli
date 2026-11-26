@@ -112,6 +112,14 @@ class AboutScreen extends StatelessWidget {
                       detail: 'wite-tech · CC-BY-4.0',
                     ),
                     _TechRow(
+                      name: 'Canora Turkish',
+                      detail: 'referans ses · Apache-2.0',
+                    ),
+                    _TechRow(
+                      name: 'Clarvia TTS tiny',
+                      detail: 'referans ses · Apache-2.0',
+                    ),
+                    _TechRow(
                       name: 'sherpa-onnx',
                       detail: 'k2-fsa · Apache-2.0',
                     ),

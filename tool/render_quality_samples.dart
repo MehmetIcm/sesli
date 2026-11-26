@@ -27,9 +27,6 @@ const _legacyVoiceEq = {
 /// Uygulamadaki `VoiceCatalog._eqProfiles` ile aynı değerler.
 const _naturalVoiceEq = {
   'female_1': VoiceEqProfile(presenceDb: -1.5),
-  'female_2': VoiceEqProfile(lowShelfDb: -0.8, deEsser: 0.25),
-  'female_3': VoiceEqProfile(lowShelfDb: -2.5, presenceDb: -1.0),
-  'male_1': VoiceEqProfile(presenceDb: -1.5, airDb: -1.0),
   'male_2': VoiceEqProfile(
     lowShelfDb: -2.0,
     presenceDb: 3.0,

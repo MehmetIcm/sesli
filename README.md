@@ -37,7 +37,7 @@ Seslendirme, uygulamayla birlikte gelen ONNX modeliyle cihaz üzerinde
 | Web release derlemesi | Başarılı (`build/web`, ~219 MB) |
 | GitHub deposu | Herkese açık: https://github.com/MehmetIcm/sesli |
 | GitHub Pages yayını | Yayında ve doğrulandı: https://mehmeticm.github.io/sesli/ |
-| Sürüm | v1.1.0 (GitHub Release + etiket) |
+| Sürüm | v1.2.0 (GitHub Release + etiket) |
 | Chrome'da gerçek seslendirme | Doğrulandı (Elif, Emre ve Teknik örnek metni; 17,6 sn'de 20,9 sn ses) |
 | Oynatma biçimi | Doğrulandı (`data:audio/wav`, 48 kHz, mono, 16-bit, 20,9 sn) |
 | Oynat / duraklat / devam / sarma | Doğrulandı (tarayıcıda gerçek tıklamalarla) |
@@ -142,7 +142,7 @@ hdiutil create \
   -volname "Sesli" \
   -srcfolder build/macos/Build/Products/Release/Sesli.app \
   -ov -format UDZO \
-  Sesli-1.1.0.dmg
+  Sesli-1.2.0.dmg
 ```
 
 Dağıtım için uygulamanın imzalanması ve noterden geçirilmesi gerekir
@@ -195,8 +195,15 @@ lib/
   **CC-BY-4.0**, ONNX aktarımı; dil modeli INT8, Mimi kod çözücüsü fp32,
   ~157 MB, 24 kHz.
 - ONNX dışa aktarma: `lomotron/pocket-tts-onnx-export` (MIT).
-- Altı konuşmacı, modelin kendi referans kayıtlarıyla ses klonlama yoluyla
-  elde edilir; perde kaydırma (pitch shifting) kullanılmaz.
+- Altı konuşmacı, referans kaydıyla ses klonlama yoluyla elde edilir;
+  perde kaydırma (pitch shifting) kullanılmaz. Elif, Kerem ve Mert modelin
+  kendi kayıtlarını kullanır. Zeynep ve Emre referansları **Canora Turkish**
+  (`elif`, `emre`), Defne referansı **Clarvia TTS tiny** (`female_4`) ile
+  üretilmiştir; iki model de **Apache-2.0** lisanslıdır ve ağırlıkları
+  uygulamaya dahil edilmez.
+- Doğallık (UTMOS22, aynı metin, 3 tohum ortalaması): Zeynep 3,36 → **3,78**;
+  Defne 3,52 → **3,73**; Emre 2,92 → **3,61**. Elif 3,75; Kerem 3,01;
+  Mert 3,03.
 - Duygu etiketleri: `[sakin]`, `[mutlu]`, `[üzgün]`, `[kızgın]`, `[şaşkın]`.
 
 Lisans ayrıntıları: [LICENSES.md](LICENSES.md) ve

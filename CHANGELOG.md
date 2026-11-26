@@ -10,6 +10,47 @@ ve [Anlamsal Sürümleme](https://semver.org/lang/tr/) ilkelerini izler.
 - macOS imzalı DMG paketi (Xcode + CocoaPods gerektirir).
 - Safari ve Firefox için çalışma zamanı testleri.
 
+## [1.2.0] — 2026-11-25
+
+Referans ses kalitesi sürümü.
+
+### Değişti
+
+- **Zeynep, Defne ve Emre için yeni referans kayıtları.** Pocket TTS çıktısı,
+  referans kaydın kalitesini izlediği için düşük doğallıklı erkek
+  referansları ve iki kadın referansı değiştirildi:
+  - Zeynep → **Canora Turkish** `elif` (Apache-2.0)
+  - Defne → **Clarvia TTS tiny** `female_4` (Apache-2.0)
+  - Emre → **Canora Turkish** `emre` (Apache-2.0)
+  Referanslar 3,7–4,7 saniyelik, sessizlikleri kırpılmış, tepe noktası
+  hizalanmış 24 kHz WAV dosyalarıdır. Model ağırlıkları uygulamaya dahil
+  edilmez; yalnızca üretilen kısa referans sesleri paketlenir.
+- **Ses bazlı EQ:** yeni referanslar dengeli geldiği için Zeynep, Defne ve
+  Emre'de ek EQ kaldırıldı. Elif, Kerem ve Mert'in ayarları korundu.
+- **Önizlemeler:** üç sesin tanıtım kayıtları yeni tınıyla yeniden üretildi.
+
+### Ölçümler
+
+Aynı metin, 3 tohum ortalaması, UTMOS22 (1–5):
+
+| Ses | Önce | Sonra |
+| --- | ---: | ---: |
+| Elif | 3,75 | 3,75 |
+| Zeynep | 3,36 | **3,78** |
+| Defne | 3,52 | **3,73** |
+| Emre | 2,92 | **3,61** |
+| Kerem | 3,01 | 3,01 |
+| Mert | 3,03 | 3,03 |
+
+Altı sesin ortalaması 3,27 → **3,49**. Ölçümler her iki sürümde de ham
+24 kHz model çıktısı üzerinde, aynı metin ve tohumlarla yapıldığı için
+karşılaştırma doğrudan geçerlidir.
+
+### Değişti (altyapı)
+
+- Web service worker önbelleği `sesli-cache-v14`.
+- Sürüm 1.2.0.
+
 ## [1.1.0] — 2026-11-25
 
 Doğallık ve konuşma akışı sürümü.
@@ -87,6 +128,7 @@ Doğallık ve konuşma akışı sürümü.
 - Web: 20,9 sn ses 17,6 sn'de üretildi; MP3 `ffprobe` ile 48 kHz / 160 kbps
   doğrulandı.
 
-[Yayınlanmadı]: https://github.com/MehmetIcm/sesli/compare/v1.1.0...HEAD
+[Yayınlanmadı]: https://github.com/MehmetIcm/sesli/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/MehmetIcm/sesli/releases/tag/v1.2.0
 [1.1.0]: https://github.com/MehmetIcm/sesli/releases/tag/v1.1.0
 [1.0.0]: https://github.com/MehmetIcm/sesli/releases/tag/v1.0.0

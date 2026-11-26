@@ -298,8 +298,10 @@ void main() {
     test('her ses için profil tanımlıdır', () {
       expect(VoiceCatalog.eqFor('female_1').deEsser, 0);
       expect(VoiceCatalog.eqFor('female_1').presenceDb, -1.5);
-      expect(VoiceCatalog.eqFor('male_1').presenceDb, -1.5);
-      expect(VoiceCatalog.eqFor('male_1').airDb, -1.0);
+      // Yeni sentetik referanslar dengeli geldiği için ek EQ uygulanmaz.
+      expect(VoiceCatalog.eqFor('female_2').isNeutral, isTrue);
+      expect(VoiceCatalog.eqFor('female_3').isNeutral, isTrue);
+      expect(VoiceCatalog.eqFor('male_1').isNeutral, isTrue);
       expect(VoiceCatalog.eqFor('male_2').presenceDb, 3.0);
       expect(VoiceCatalog.eqFor('male_2').lowShelfDb, -2.0);
       expect(VoiceCatalog.eqFor('male_3').lowShelfDb, -2.5);
