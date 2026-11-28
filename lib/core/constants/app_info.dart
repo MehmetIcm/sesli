@@ -4,7 +4,7 @@ class AppInfo {
 
   static const String name = 'Sesli';
   static const String tagline = 'Metniniz, doğal Türkçe sesle.';
-  static const String version = '1.2.0';
+  static const String version = '1.2.1';
   static const String buildNumber = '1';
   static const String bundleId = 'com.mehmeticme.turkceSes';
 

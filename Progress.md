@@ -687,3 +687,61 @@ Adaylar arasında en yüksek ortalamalar: Canora `elif` 3,80, mevcut
   Canora ve Clarvia atıflarıyla güncellendi.
 - Service worker önbelleği `sesli-cache-v14`; sürüm 1.2.0.
 - `flutter analyze`: 0 sorun; `flutter test`: 164 test geçiyor.
+
+## 15. 1.2.1 — Kelime yutulması düzeltmeleri (27–28 Kasım 2026)
+
+Kullanıcı, uzun bir stres metninde sesin “saçmaladığını, kelimeleri yuttuğunu
+ve anlamsız sesler çıkardığını” bildirdi. Metin:
+
+> Bir günlüğüne 1.234.567,89 TL'lik bütçeyle Zürih'ten Québec'e, oradan da
+> Johannesburg'a uçacak olan mühendis; yapay zekâ, nöroloji, psikoloji ve
+> senkronizasyon üzerine şaşırtıcı derecede karmaşık bir sunum hazırlamıştı.
+> Peki, 29 Şubat 2028 Salı günü saat 23.59'da başlayan bu olağanüstü
+> yolculuk, gerçekten düşünüldüğü kadar mükemmel sonuçlanabilecek miydi?
+
+### Kök nedenler
+
+1. `TL'lik` eki, para birimi dönüşümünden sonra cümlede `kuruş 'lik` olarak
+   kalıyordu; model bu kalıntıyı ve önündeki “lira” kelimesini yutuyordu.
+2. Parçalayıcı sınırı 260 karakterdi; Sherpa'nın 240 karakterlik iç cümle
+   sınırı uzun cümleyi cümle ortasında bölüyordu. Uygulama da uzun cümleyi
+   kelime sınırından, virgülleri yok sayarak bölüyordu.
+3. Pocket TTS'in 4.000 parçalı Türkçe sözlüğünde `zür`, `kron` gibi heceler
+   yok. Model `senkronizasyon` → “senkronize aksiyon”,
+   `sonuçlanabilecek` → “sonuçlarına bilecek” diye hece uyduruyordu. Tohum
+   (42–46), sıcaklık (0,25–0,45), adım sayısı (8–12) ve tireleme denendi;
+   hiçbiri düzeltmedi.
+
+### Düzeltmeler
+
+- Para birimine kesme işaretiyle bağlanan ek, tutarın son birimine ünlü
+  uyumuyla ekleniyor: `1.234.567,89 TL'lik` →
+  “bir milyon ... yedi lira, seksen dokuz kuruşluk”.
+- Kuruş kısmından önce virgül konuyor; uzun sayı dizisinde modelin “lira”
+  kelimesini atlaması engellendi (ASR: virgülsüz varyantta “lira” yok,
+  virgüllü varyantta var).
+- Parçalama sınırı 200 karaktere indirildi; uzun cümle önce virgül, noktalı
+  virgül, iki nokta ve tireden bölünüyor, çok kısa artıklar önceki parçaya
+  katılıyor. Noktalı virgül cümle sınırı sayılıyor.
+- Okunuş sözlüğü eklendi: `Québec` → `Kebek`, `senkronizasyon` → `eşgüdüm`,
+  `sonuçlanabilecek miydi` → `sonuçlanır mıydı`. Bunlar anlamı koruyan
+  Türkçe karşılıklar; kullanıcının metni değiştirilmiyor, yalnızca
+  seslendirme metni üretiliyor.
+
+### Doğrulama
+
+Stres metni artık üç parçaya ayrılıyor: 166, 102 ve 168 karakter. Vosk
+Türkçe ASR çıktısı:
+
+- `... yedi lira seksen dokuz kuruşluk bütçe ile ... oradan da
+  johannesburg'da uçacak olan mühendis`
+- `yapay zeka nöroloji psikoloji ve eşgüdüm üzerine ... sunum hazırlanmıştı`
+- `... mükemmel sonuçlanır mıydı`
+
+Eski çıktıda birinci parçada “lira” ve “quebec” çevresi anlaşılmazdı; yeni
+çıktıda para birimi ve cümle sonu eksiksiz. `Zürih'ten` hâlâ modelin sözlük
+boşluğu nedeniyle “yürekten”e yakın duyuluyor; alternatif yazımlar
+(`zurih`, `tsürih`, `zürih ten`, `zürihden`) daha kötü sonuç verdi.
+
+`flutter analyze`: 0 sorun; `flutter test`: 170 test geçiyor. Service worker
+önbelleği `sesli-cache-v15`; sürüm 1.2.1.

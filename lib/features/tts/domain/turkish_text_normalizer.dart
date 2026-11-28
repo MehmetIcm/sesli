@@ -103,6 +103,9 @@ class TurkishTextNormalizer {
 
     // 2. Ölçü birimleri, kısaltmalar ve semboller.
     text = _replaceUnits(text);
+    // Para birimine kesme işaretiyle bağlanan ekler kısaltmadan önce
+    // çözülür: 1.234,89 TL'lik -> ... lira, seksen dokuz kuruşluk.
+    text = _replaceCurrencyWithSuffix(text);
     text = _replaceAbbreviations(text);
 
     // 3. Tarih ve saatler (sayılardan önce).
@@ -198,22 +201,26 @@ class TurkishTextNormalizer {
 
     text = turkishLowercase(text);
 
-    // 12. Aynı kelimenin üç ve daha fazla tekrarını birleştir. Model
+    // 12. Modelin sözlüğünde bulunmayan veya sürekli yanlış seslendirdiği
+    //     kelimeler için okunuş karşılıkları.
+    text = _applyPronunciationLexicon(text);
+
+    // 13. Aynı kelimenin üç ve daha fazla tekrarını birleştir. Model
     //     tekrarlanan kelimelerde döngüye girebiliyor.
     text = _mergeRepeats(text);
 
-    // 13. İngilizce kelimeleri Türkçe sesletime çevir. Bu adım, q/w/x gibi
+    // 14. İngilizce kelimeleri Türkçe sesletime çevir. Bu adım, q/w/x gibi
     //     harfler temizlenmeden önce yapılmalıdır; aksi hâlde "webcam"
     //     "vebcam" olarak kalır.
     text = _transliterator.transliterate(text);
 
-    // 14. Model sözlüğünde bulunmayan karakterleri ve kalan rakamları
+    // 15. Model sözlüğünde bulunmayan karakterleri ve kalan rakamları
     //     temizle. Pocket TTS'in SentencePiece sözlüğünde rakam, q/w/x ve
     //     birçok sembol yoktur; bunlardan biri metinde kalırsa model hiç
     //     token üretemez ve seslendirme başarısız olur.
     text = _sanitizeForModel(text);
 
-    // 15. Kesme işaretini kelime içinde kaldır.
+    // 16. Kesme işaretini kelime içinde kaldır.
     text = text.replaceAll(
       RegExp(r"(?<=[a-zçğıöşüâîû])['’](?=[a-zçğıöşüâîû])"),
       '',
@@ -489,6 +496,44 @@ class TurkishTextNormalizer {
     );
   }
 
+  /// Modelin sözlüğünde bulunmayan veya sürekli yanlış seslendirdiği
+  /// kelimeler için doğrulanmış okunuş karşılıkları.
+  ///
+  /// Pocket TTS'in Türkçe SentencePiece sözlüğü 4.000 parçalıdır; "zür",
+  /// "kron" gibi heceler sözlükte yoktur. Bu kelimelerde model hece uydurur
+  /// (ör. "senkronizasyon" -> "senkronize aksiyon", "sonuçlanabilecek" ->
+  /// "sonuçlarına bilecek"). Karşılıklar anlamı koruyan Türkçe eşdeğerlerdir;
+  /// kullanıcının orijinal metni hiçbir zaman değiştirilmez.
+  static const Map<String, String> _wordLexicon = {
+    'québec': 'kebek',
+    'quebec': 'kebek',
+    'senkronizasyon': 'eşgüdüm',
+    'senkronizasyonu': 'eşgüdümü',
+    'senkronizasyonun': 'eşgüdümün',
+  };
+
+  static const Map<String, String> _phraseLexicon = {
+    'sonuçlanabilecek miydi': 'sonuçlanır mıydı',
+    'sonuçlanabilecek mi': 'sonuçlanır mı',
+  };
+
+  String _applyPronunciationLexicon(String text) {
+    var result = text;
+    for (final entry in _phraseLexicon.entries) {
+      result = result.replaceAll(entry.key, entry.value);
+    }
+    for (final entry in _wordLexicon.entries) {
+      result = result.replaceAll(
+        RegExp(
+          '(?<!\\p{L})${RegExp.escape(entry.key)}(?!\\p{L})',
+          unicode: true,
+        ),
+        entry.value,
+      );
+    }
+    return result;
+  }
+
   String _ordinal(int n) {
     final words = _intWords(n);
     final lastSpace = words.lastIndexOf(' ');
@@ -580,7 +625,78 @@ class TurkishTextNormalizer {
     return text;
   }
 
-  String _money(String raw, String majorUnit, String minorUnit) {
+  /// Para birimine kesme işaretiyle bağlanan eki çözer.
+  ///
+  /// "1.234.567,89 TL'lik" ifadesi eski akışta "... kuruş 'lik" gibi anlamsız
+  /// bir kalıntı bırakıyor ve model bu kalıntıyı yutuyordu. Ek, tutarın son
+  /// birimine ünlü uyumuyla eklenir: "... lira, seksen dokuz kuruşluk".
+  String _replaceCurrencyWithSuffix(String text) {
+    var result = text;
+    result = result.replaceAllMapped(
+      RegExp(
+        r"(\d[\d.,]*)\s*(?:₺|TL|lira)\s*['’]([a-zçğıöşü]+)",
+        caseSensitive: false,
+      ),
+      (m) => _money(m.group(1)!, 'lira', 'kuruş', suffix: m.group(2)!),
+    );
+    result = result.replaceAllMapped(
+      RegExp(
+        r"(\d[\d.,]*)\s*(?:USD|dolar)\s*['’]([a-zçğıöşü]+)",
+        caseSensitive: false,
+      ),
+      (m) => _money(m.group(1)!, 'dolar', 'sent', suffix: m.group(2)!),
+    );
+    result = result.replaceAllMapped(
+      RegExp(
+        r"(\d[\d.,]*)\s*(?:EUR|euro)\s*['’]([a-zçğıöşü]+)",
+        caseSensitive: false,
+      ),
+      (m) => _money(m.group(1)!, 'euro', 'sent', suffix: m.group(2)!),
+    );
+    result = result.replaceAllMapped(
+      RegExp(
+        r"(\d[\d.,]*)\s*(?:GBP|sterlin|£)\s*['’]([a-zçğıöşü]+)",
+        caseSensitive: false,
+      ),
+      (m) => _money(m.group(1)!, 'sterlin', 'peni', suffix: m.group(2)!),
+    );
+    result = result.replaceAllMapped(
+      RegExp(r"\$\s*(\d[\d.,]*)\s*['’]([a-zçğıöşü]+)"),
+      (m) => _money(m.group(1)!, 'dolar', 'sent', suffix: m.group(2)!),
+    );
+    result = result.replaceAllMapped(
+      RegExp(r"€\s*(\d[\d.,]*)\s*['’]([a-zçğıöşü]+)"),
+      (m) => _money(m.group(1)!, 'euro', 'sent', suffix: m.group(2)!),
+    );
+    result = result.replaceAllMapped(
+      RegExp(r"£\s*(\d[\d.,]*)\s*['’]([a-zçğıöşü]+)"),
+      (m) => _money(m.group(1)!, 'sterlin', 'peni', suffix: m.group(2)!),
+    );
+    result = result.replaceAllMapped(
+      RegExp(r"(\d[\d.,]*)\s*₺\s*['’]([a-zçğıöşü]+)"),
+      (m) => _money(m.group(1)!, 'lira', 'kuruş', suffix: m.group(2)!),
+    );
+    result = result.replaceAllMapped(
+      RegExp(r"(\d[\d.,]*)\s*\$\s*['’]([a-zçğıöşü]+)"),
+      (m) => _money(m.group(1)!, 'dolar', 'sent', suffix: m.group(2)!),
+    );
+    result = result.replaceAllMapped(
+      RegExp(r"(\d[\d.,]*)\s*€\s*['’]([a-zçğıöşü]+)"),
+      (m) => _money(m.group(1)!, 'euro', 'sent', suffix: m.group(2)!),
+    );
+    result = result.replaceAllMapped(
+      RegExp(r"(\d[\d.,]*)\s*£\s*['’]([a-zçğıöşü]+)"),
+      (m) => _money(m.group(1)!, 'sterlin', 'peni', suffix: m.group(2)!),
+    );
+    return result;
+  }
+
+  String _money(
+    String raw,
+    String majorUnit,
+    String minorUnit, {
+    String? suffix,
+  }) {
     var integerPart = raw;
     var fractionPart = '';
     if (raw.contains(',')) {
@@ -600,9 +716,40 @@ class TurkishTextNormalizer {
     final minor = fractionPart.isEmpty
         ? 0
         : int.tryParse(fractionPart.padRight(2, '0').substring(0, 2)) ?? 0;
-    final buffer = StringBuffer('${_intWords(major)} $majorUnit');
-    if (minor > 0) buffer.write(' ${_intWords(minor)} $minorUnit');
-    return buffer.toString();
+
+    // Kuruş kısmından önce virgül, modelin uzun sayı dizisinde ana birimi
+    // ("lira") yutmasını engeller.
+    if (minor > 0) {
+      final minorName = suffix == null
+          ? minorUnit
+          : _attachSuffix(minorUnit, suffix);
+      return '${_intWords(major)} $majorUnit, ${_intWords(minor)} $minorName';
+    }
+    final majorName = suffix == null
+        ? majorUnit
+        : _attachSuffix(majorUnit, suffix);
+    return '${_intWords(major)} $majorName';
+  }
+
+  /// Bir ada "-lik/-lık/-luk/-lük" benzeri eki ünlü uyumuyla ekler.
+  String _attachSuffix(String word, String suffix) {
+    final harmony = switch (_lastVowel(word)) {
+      'a' || 'ı' => 'ı',
+      'e' || 'i' => 'i',
+      'o' || 'u' => 'u',
+      _ => 'ü',
+    };
+    const vowels = 'aeıioöuü';
+    var harmonized = suffix;
+    for (var i = 0; i < harmonized.length; i++) {
+      if (vowels.contains(harmonized[i])) {
+        harmonized = harmonized.replaceRange(i, i + 1, harmony);
+        break;
+      }
+    }
+    final buffer =
+        _isVowel(word.runes.last) && _isVowel(harmonized.runes.first) ? 'y' : '';
+    return '$word$buffer$harmonized';
   }
 
   // ── Telefon ────────────────────────────────────────────────────────────

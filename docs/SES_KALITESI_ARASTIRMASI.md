@@ -887,3 +887,64 @@ Canora Turkish (`empiriolabsai/canora-turkish`) ve Clarvia TTS tiny
 (`wite-tech/clarvia-tts-tiny`) Apache-2.0 lisanslıdır. Uygulamaya yalnızca
 bu modellerle üretilmiş kısa referans WAV dosyaları girer; model ağırlıkları
 dağıtılmaz. Atıflar `LICENSES.md` ve `THIRD_PARTY_NOTICES.md` içindedir.
+
+## 9. 1.2.1 kelime yutulması incelemesi (27–28 Kasım 2026)
+
+Kullanıcı uzun bir stres metninde anlaşılmayan, yutulmuş kelimeler bildirdi.
+İnceleme üç ayrı kök neden gösterdi.
+
+### 9.1 Ölçüm yöntemi
+
+- Model: `assets/models/pocket_tts_tr` (Pocket TTS, 24 kHz).
+- Referans: `female_1.wav`, `num_steps=8`, `temperature=0.45`.
+- Nesnel kontrol: Vosk `vosk-model-small-tr-0.3` ile kelime bazlı ASR ve
+  UTMOS22. UTMOS tek başına yeterli değil (±0,1–0,3 tohum gürültüsü);
+  karar ASR'de kelime kaybı olup olmamasına göre verildi.
+
+### 9.2 Para birimi
+
+Normalizasyon `1.234.567,89 TL'lik` için `... kuruş 'lik` üretiyordu.
+Model bu kalıntıyı ve önündeki “lira” kelimesini yutuyordu. Düzeltme:
+
+| Girdi | Eski çıktı | Yeni çıktı |
+| --- | --- | --- |
+| `1.234.567,89 TL'lik` | `... kuruş 'lik` | `... lira, seksen dokuz kuruşluk` |
+
+Kuruştan önce virgül, uzun sayı dizisinde “lira”nın atlanmasını da
+engelliyor. Virgülsüz varyantın ASR çıktısında “lira” yoktu; virgüllü
+varyantta vardı.
+
+### 9.3 Parçalama
+
+Eski sınır 260 karakterdi ve Sherpa'nın 240 karakterlik iç cümle sınırı
+tetikleniyordu. Yeni sınır 200; uzun cümle önce virgül, noktalı virgül, iki
+nokta ve tireden bölünüyor. Stres metni artık 166 / 102 / 168 karakterlik
+üç doğal parça.
+
+### 9.4 Sözlük boşluğu
+
+Pocket TTS Türkçe SentencePiece sözlüğü 4.000 parçalıdır ve `zür`, `kron`
+gibi heceleri içermez. Denenen ve düzeltmeyen yöntemler:
+
+| Deneme | Sonuç |
+| --- | --- |
+| Tohum 42–46 | `senkronizasyon` her tohumda “senkronize aksiyon” |
+| Sıcaklık 0,25–0,45 | değişmedi |
+| Adım 8 → 12 | değişmedi |
+| `senkronizasyon` tireleme | “senkronize aksiyon izalasyon” |
+| `sonuçlanabilecek` tireleme/boşluk | “sonuçlarına bilecek” |
+
+Bu nedenle anlamı koruyan okunuş karşılıkları eklendi:
+
+| Kelime | Karşılık | Gerekçe |
+| --- | --- | --- |
+| `Québec` | `Kebek` | Türkçe yerleşik okunuş |
+| `senkronizasyon` | `eşgüdüm` | TDK eş anlamlısı; ASR temiz |
+| `sonuçlanabilecek miydi` | `sonuçlanır mıydı` | Yakın anlam; ASR temiz |
+
+### 9.5 Kalan sınır
+
+`Zürih'ten` için sözlükte `zür` hecesi yok; `zurih`, `tsürih`, `zürih ten`,
+`zürihden` varyantları “yürekten”, “risk kentten”, “jüri seni”, “sende” gibi
+daha kötü sonuçlar verdi. Kelime olduğu gibi bırakıldı; bu, bilinen ve
+belgelenmiş tek kalan sınır.

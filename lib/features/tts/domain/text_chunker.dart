@@ -1,19 +1,30 @@
 /// Uzun metinleri modelin rahat işleyebileceği parçalara böler.
 ///
-/// Parçalama cümle sınırlarını korur; tek bir cümle sınırı aşarsa kelime
-/// sınırından bölünür. Böylece her istek kısa kalır, ilerleme göstergesi
-/// anlamlı olur ve duraklatma istekleri parçalar arasında işlenebilir.
+/// Parçalama cümle sınırlarını korur; tek bir cümle sınırı aşarsa önce
+/// virgül, noktalı virgül, iki nokta ve tire gibi doğal duraklama
+/// noktalarından, bunlar yoksa kelime sınırından bölünür. Böylece her istek
+/// kısa kalır, ilerleme göstergesi anlamlı olur ve duraklatma istekleri
+/// parçalar arasında işlenebilir.
 class TextChunker {
   TextChunker._();
 
-  static const int defaultMaxChars = 260;
+  /// Modelin tek cümlede güvenilir kaldığı sınır.
+  ///
+  /// Sherpa'nın `max_char_in_sentence` değeri 240'tır; bu değerin üzerindeki
+  /// parçalar modelin içinde daha da bölünüyor ve cümle ortasında kelime
+  /// yutuluyordu. 200 karakter, uzun sayı ve yabancı ad dizilerinde bile
+  /// modelin kendi bölmesini tetiklemez.
+  static const int defaultMaxChars = 200;
+
+  /// Tek başına kalan çok kısa parçaları önceki parçayla birleştirme sınırı.
+  static const int _minPartChars = 40;
 
   /// Cümleleri gruplayarak parçalar üretir (eski davranış).
   static List<String> split(String text, {int maxChars = defaultMaxChars}) {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return [];
 
-    final sentences = RegExp(r'[^.!?…\n]+[.!?…]*\s*')
+    final sentences = RegExp(r'[^.!?…;\n]+[.!?…;]*\s*')
         .allMatches(trimmed)
         .map((match) => match.group(0)!.trim())
         .where((sentence) => sentence.isNotEmpty)
@@ -66,7 +77,7 @@ class TextChunker {
     if (trimmed.isEmpty) return [];
 
     final result = <SpeechSegment>[];
-    final matches = RegExp(r'[^.!?…]+[.!?…]*').allMatches(trimmed);
+    final matches = RegExp(r'[^.!?…;]+[.!?…;]*').allMatches(trimmed);
     for (final match in matches) {
       final sentence = match.group(0)!.trim();
       if (sentence.isEmpty) continue;
@@ -120,7 +131,50 @@ class TextChunker {
   }
 
   static List<String> _splitLong(String sentence, int maxChars) {
-    final words = sentence.split(RegExp(r'\s+'));
+    final clauses = RegExp(r'[^,;:—–]+[,;:—–]*')
+        .allMatches(sentence)
+        .map((match) => match.group(0)!.trim())
+        .where((clause) => clause.isNotEmpty)
+        .toList();
+
+    final chunks = <String>[];
+    final current = StringBuffer();
+
+    void flush() {
+      final value = current.toString().trim();
+      if (value.isNotEmpty) chunks.add(value);
+      current.clear();
+    }
+
+    for (final clause in clauses) {
+      if (clause.length > maxChars) {
+        flush();
+        chunks.addAll(_splitWords(clause, maxChars));
+        continue;
+      }
+      if (current.isNotEmpty &&
+          current.length + clause.length + 1 > maxChars) {
+        flush();
+      }
+      if (current.isNotEmpty) current.write(' ');
+      current.write(clause);
+    }
+    flush();
+
+    // Cümle sonundaki çok kısa artığı önceki parçaya kat.
+    if (chunks.length > 1 && chunks.last.length < _minPartChars) {
+      final tail = chunks.last;
+      final previous = chunks[chunks.length - 2];
+      if (previous.length + 1 + tail.length <= maxChars) {
+        chunks.removeLast();
+        chunks[chunks.length - 1] = '$previous $tail';
+      }
+    }
+    return chunks;
+  }
+
+  static List<String> _splitWords(String clause, int maxChars) {
+    final words = clause.split(RegExp(r'\s+'));
     final chunks = <String>[];
     final current = StringBuffer();
 

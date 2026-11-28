@@ -35,7 +35,8 @@ class PocketTtsParams {
   static const int minCharsInSentence = 20;
 
   /// Modelin kendi içinde böleceği üst sınır. Dart tarafındaki parçalama
-  /// 260 karakter olduğundan bu değer onunla uyumludur.
+  /// 200 karakter olduğundan model bu sınırı tetiklemez; uzun cümleler
+  /// cümle ortasında değil, uygulamada doğal duraklama noktalarından bölünür.
   static const int maxCharsInSentence = 240;
 
   /// Modele özgü ek parametreler (JSON olarak iletilir).

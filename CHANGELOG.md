@@ -10,6 +10,37 @@ ve [Anlamsal Sürümleme](https://semver.org/lang/tr/) ilkelerini izler.
 - macOS imzalı DMG paketi (Xcode + CocoaPods gerektirir).
 - Safari ve Firefox için çalışma zamanı testleri.
 
+## [1.2.1] — 2026-11-28
+
+Uzun ve zor cümlelerde kelime yutulmasını gideren okuma düzeltmeleri.
+
+### Düzeltildi
+
+- **Para birimi eki:** `1.234.567,89 TL'lik` artık
+  "... lira, seksen dokuz kuruşluk" olarak okunuyor. Önceki sürümde cümlede
+  `kuruş 'lik` kalıntısı kalıyor, model "lira" ile eki yutuyordu.
+- **Kuruştan önce virgül:** Uzun tutarlarda modelin ana birimi atlamasını
+  engellemek için kuruş kısmı virgülle ayrılıyor.
+- **Parçalama sınırı 260 → 200 karakter.** Sherpa'nın 240 karakterlik iç
+  cümle sınırı artık tetiklenmiyor; uzun cümleler modelin içinde değil,
+  uygulamada bölünüyor.
+- **Noktalama önceliği:** Uzun cümleler önce virgül, noktalı virgül, iki nokta
+  ve tireden bölünüyor. Cümle ortasında anlamsız kesilme ve çok kısa artık
+  parçalar azaldı.
+- **Noktalı virgül cümle sınırı sayılıyor.**
+- **Okunuş sözlüğü:** Modelin Türkçe sözlüğünde bulunmayan kelimeler için
+  anlamı koruyan karşılıklar kullanılıyor: `Québec` → `Kebek`,
+  `senkronizasyon` → `eşgüdüm`,
+  `sonuçlanabilecek miydi` → `sonuçlanır mıydı`.
+
+### Doğrulama
+
+- Kullanıcı stres metni üç parçaya ayrılıyor (166 / 102 / 168 karakter);
+  Vosk Türkçe ASR'de "lira", "seksen dokuz kuruşluk",
+  "oradan da ... mühendis" ve "sonuçlanır mıydı" eksiksiz çıkıyor.
+- `flutter analyze`: 0 sorun; `flutter test`: 170 test geçiyor.
+- Service worker önbelleği: `sesli-cache-v15`.
+
 ## [1.2.0] — 2026-11-26
 
 Referans ses kalitesi sürümü.

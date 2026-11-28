@@ -54,10 +54,21 @@ void main() {
       expect(normalize('25 TL'), 'yirmi beş lira');
       expect(
         normalize('1.250,75 TL'),
-        'bin iki yüz elli lira yetmiş beş kuruş',
+        'bin iki yüz elli lira, yetmiş beş kuruş',
       );
       expect(normalize('₺25'), 'yirmi beş lira');
       expect(normalize('\$10'), 'on dolar');
+    });
+
+    test('para birimine bağlanan eki tutara ekler', () {
+      expect(normalize("100 TL'lik"), 'yüz liralık');
+      expect(
+        normalize("1.234.567,89 TL'lik"),
+        'bir milyon iki yüz otuz dört bin beş yüz altmış yedi lira, '
+        'seksen dokuz kuruşluk',
+      );
+      expect(normalize("10 €'luk"), 'on euroluk');
+      expect(normalize(r"$250'lik"), r'iki yüz elli dolarlık');
     });
 
     test('yüzdeleri okur', () {
@@ -221,6 +232,37 @@ void main() {
           reason: 'Model dışı karakter kaldı: $result',
         );
       }
+    });
+
+    test('modelin yanlış seslendirdiği kelimeleri okunuş karşılığıyla verir', () {
+      expect(normalize("Québec'e"), 'kebeke');
+      expect(
+        normalize('yapay zekâ, nöroloji, psikoloji ve senkronizasyon üzerine'),
+        'yapay zekâ, nöroloji, psikoloji ve eşgüdüm üzerine',
+      );
+      expect(
+        normalize('mükemmel sonuçlanabilecek miydi?'),
+        'mükemmel sonuçlanır mıydı?',
+      );
+    });
+
+    test('kullanıcı stres metnini yutulmuş kelime bırakmadan okur', () {
+      const text =
+          "Bir günlüğüne 1.234.567,89 TL'lik bütçeyle Zürih'ten Québec'e, "
+          "oradan da Johannesburg'a uçacak olan mühendis; yapay zekâ, "
+          'nöroloji, psikoloji ve senkronizasyon üzerine şaşırtıcı derecede '
+          'karmaşık bir sunum hazırlamıştı. Peki, 29 Şubat 2028 Salı günü '
+          "saat 23.59'da başlayan bu olağanüstü yolculuk, gerçekten "
+          'düşünüldüğü kadar mükemmel sonuçlanabilecek miydi?';
+
+      final result = normalize(text);
+
+      expect(result, contains('yedi lira, seksen dokuz kuruşluk bütçeyle'));
+      expect(result, isNot(contains("'lik")));
+      expect(result, contains('kebeke'));
+      expect(result, contains('eşgüdüm üzerine'));
+      expect(result, contains('sonuçlanır mıydı?'));
+      expect(RegExp(r'\d').hasMatch(result), isFalse);
     });
 
     test('orijinal metni değiştirmez', () {

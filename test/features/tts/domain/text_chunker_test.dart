@@ -65,6 +65,35 @@ void main() {
       expect(TextChunker.pauseAfter('Bekle...'), 520);
     });
 
+    test('noktalı virgülü cümle sınırı sayar', () {
+      final segments = TextChunker.segments('Bir cümle; ikinci cümle.');
+      expect(segments.map((segment) => segment.text).toList(), [
+        'Bir cümle;',
+        'ikinci cümle.',
+      ]);
+      expect(segments.first.pauseAfterMs, 200);
+    });
+
+    test('uzun cümleyi önce virgülden böler', () {
+      final first = List.filled(18, 'kelime').join(' ');
+      final second = List.filled(18, 'kelime').join(' ');
+      final segments = TextChunker.segments('$first, $second.');
+
+      expect(segments.length, 2);
+      expect(segments.first.text.endsWith(','), isTrue);
+      expect(segments.last.text.endsWith('.'), isTrue);
+      for (final segment in segments) {
+        expect(
+          segment.text.length,
+          lessThanOrEqualTo(TextChunker.defaultMaxChars),
+        );
+      }
+    });
+
+    test('varsayılan sınır modelin cümle sınırını aşmaz', () {
+      expect(TextChunker.defaultMaxChars, lessThanOrEqualTo(200));
+    });
+
     test('uzun cümleyi ara nefes payıyla böler', () {
       final text = '${List.filled(30, 'kelime').join(' ')}.';
       final segments = TextChunker.segments(text, maxChars: 40);

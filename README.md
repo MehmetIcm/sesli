@@ -33,17 +33,17 @@ Seslendirme, uygulamayla birlikte gelen ONNX modeliyle cihaz üzerinde
 | Alan | Durum |
 | --- | --- |
 | `flutter analyze` | Temiz (0 sorun) |
-| `flutter test` | 164 test geçiyor |
+| `flutter test` | 170 test geçiyor |
 | Web release derlemesi | Başarılı (`build/web`, ~219 MB) |
 | GitHub deposu | Herkese açık: https://github.com/MehmetIcm/sesli |
 | GitHub Pages yayını | Yayında ve doğrulandı: https://mehmeticm.github.io/sesli/ |
-| Sürüm | v1.2.0 (GitHub Release + etiket) |
+| Sürüm | v1.2.1 (GitHub Release + etiket) |
 | Chrome'da gerçek seslendirme | Doğrulandı (Elif, Emre ve Teknik örnek metni; 17,6 sn'de 20,9 sn ses) |
 | Oynatma biçimi | Doğrulandı (`data:audio/wav`, 48 kHz, mono, 16-bit, 20,9 sn) |
 | Oynat / duraklat / devam / sarma | Doğrulandı (tarayıcıda gerçek tıklamalarla) |
 | Gerçek MP3 indirme | Doğrulandı (`ffprobe`: MP3, 48 kHz, mono, 160 kbps) |
 | İngilizce kelime sesletimi | Doğrulandı (`webcam` → “vebkem”, `Cambridge` → “kembriç”) |
-| Çevrimdışı açılış | Doğrulandı (service worker `sesli-cache-v13`) |
+| Çevrimdışı açılış | Doğrulandı (service worker `sesli-cache-v15`) |
 | Çevrimdışı seslendirme | Doğrulandı (model + WASM + referans ses önbellekten) |
 | macOS derlemesi | **Yapılamadı** — bu makinede tam Xcode ve CocoaPods yok |
 
@@ -142,7 +142,7 @@ hdiutil create \
   -volname "Sesli" \
   -srcfolder build/macos/Build/Products/Release/Sesli.app \
   -ov -format UDZO \
-  Sesli-1.2.0.dmg
+  Sesli-1.2.1.dmg
 ```
 
 Dağıtım için uygulamanın imzalanması ve noterden geçirilmesi gerekir
