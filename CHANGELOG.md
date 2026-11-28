@@ -159,7 +159,8 @@ Doğallık ve konuşma akışı sürümü.
 - Web: 20,9 sn ses 17,6 sn'de üretildi; MP3 `ffprobe` ile 48 kHz / 160 kbps
   doğrulandı.
 
-[Yayınlanmadı]: https://github.com/MehmetIcm/sesli/compare/v1.2.0...HEAD
+[Yayınlanmadı]: https://github.com/MehmetIcm/sesli/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/MehmetIcm/sesli/releases/tag/v1.2.1
 [1.2.0]: https://github.com/MehmetIcm/sesli/releases/tag/v1.2.0
 [1.1.0]: https://github.com/MehmetIcm/sesli/releases/tag/v1.1.0
 [1.0.0]: https://github.com/MehmetIcm/sesli/releases/tag/v1.0.0
